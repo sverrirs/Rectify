@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectifyUI", "RectifyUI\RectifyUI.csproj", "{96A5B97D-E03D-4680-BFEA-5DB1036238B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectifyLib", "RectifyLib\RectifyLib.csproj", "{CDE42737-DB61-4186-AA19-7F4672C03C1F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{96A5B97D-E03D-4680-BFEA-5DB1036238B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96A5B97D-E03D-4680-BFEA-5DB1036238B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96A5B97D-E03D-4680-BFEA-5DB1036238B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96A5B97D-E03D-4680-BFEA-5DB1036238B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDE42737-DB61-4186-AA19-7F4672C03C1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE42737-DB61-4186-AA19-7F4672C03C1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDE42737-DB61-4186-AA19-7F4672C03C1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE42737-DB61-4186-AA19-7F4672C03C1F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
