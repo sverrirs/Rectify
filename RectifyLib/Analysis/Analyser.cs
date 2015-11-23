@@ -8,32 +8,9 @@ using TagLib;
 
 namespace RectifyLib.Analysis
 {
-    public class Analyser
+    public class Analyser : AsyncBackgroundProcessor<AnalysisResults, AnalyserProgressArgs, string>
     {
         private static log4net.ILog Log = log4net.LogManager.GetLogger(typeof(Analyser));
-
-        private CancellationTokenSource _cancelSource = null;
-
-        #region Events
-
-        public event EventHandler<AnalyserProgressArgs> AnalysisProgress;
-
-        protected virtual void OnAnalysisProgress(AnalyserProgressArgs e)
-        {
-            AnalysisProgress?.Raise(this, e);
-        }
-
-        #endregion
-        
-        /// <summary>
-        /// Cancel an ongoing analysis job. If nothing is running or another cancellation is already 
-        /// pending this operation will have no effect.
-        /// </summary>
-        public void CancelAnalysis()
-        {
-            if(_cancelSource != null && !_cancelSource.IsCancellationRequested )
-                _cancelSource.Cancel();
-        }
 
         /// <summary>
         /// Runs an analysis asynchronously for the given <see cref="libraryPath"/> directory path.
@@ -41,24 +18,18 @@ namespace RectifyLib.Analysis
         /// correspond to the actual picture shooting date (based on EXIF, file name and other values stored in the files).
         /// </summary>
         /// <param name="libraryPath">The directory to analyse for incorrect file placements</param>
-        public Task<AnalysisResults> RunAnalysisAsync(string libraryPath)
+        protected override Func<AnalysisResults> CreateAsyncProcess(string libraryPath, CancellationToken cancellationToken)
         {
-            // Create a new cancellation source for the task
-            _cancelSource?.Dispose();
-            _cancelSource = new CancellationTokenSource();
-            var cancellationToken = _cancelSource.Token;
-
-            return new TaskFactory<AnalysisResults>().StartNew(() =>
+            return () =>
             {
-                    var path = libraryPath;
+                var path = libraryPath;
 
-                    // First we run a pre-analysis to figure out the number of files etc
-                    var preAnalysis = RunAnalysis(path, cancellationToken);
+                // First we run a pre-analysis to figure out the number of files etc
+                var preAnalysis = RunAnalysis(path, cancellationToken);
 
-                    // Run a full analysis now
-                    return RunAnalysis(path, cancellationToken, preAnalysis);
-                }, 
-                cancellationToken);
+                // Run a full analysis now
+                return RunAnalysis(path, cancellationToken, preAnalysis);
+            };
         }
 
         private AnalysisResults RunAnalysis(string libraryPath, CancellationToken cancellationToken, AnalysisResults preAnalysisResults = null)
@@ -85,10 +56,7 @@ namespace RectifyLib.Analysis
                     foreach (var filePath in Directory.EnumerateFiles(dirInfo.Path))
                     {
                         // Check if cancelled and exit if so
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            cancellationToken.ThrowIfCancellationRequested();
-                        }
+                        cancellationToken.ThrowIfCancellationRequested();
 
                         if (!this.ShouldAnalyseFile(filePath))
                             continue;
@@ -100,7 +68,7 @@ namespace RectifyLib.Analysis
                             ++currentFileCount;
 
                             // Indicate processing only when doing full analysis after a pre-analysis has been performed
-                            OnAnalysisProgress(new AnalyserProgressArgs(dirInfo.Name, filePath, currentFileCount, totalNumberOfFiles));
+                            OnBackgroundProgress(new AnalyserProgressArgs(dirInfo.Name, filePath, currentFileCount, totalNumberOfFiles));
 
                             dirInfo.AddFile(this.AnalyseFile(filePath, dirInfo));
                         }
@@ -112,8 +80,6 @@ namespace RectifyLib.Analysis
 
                     // Save the full directory info for the results
                     results.AddDirectory(dirInfo);
-
-                    break;
                 }
 
                 return results;

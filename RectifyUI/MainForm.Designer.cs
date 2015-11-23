@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripStatuslbl = new System.Windows.Forms.ToolStripStatusLabel();
@@ -61,6 +62,7 @@
             this.mItemExitApplication = new System.Windows.Forms.ToolStripMenuItem();
             this.mItemAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutRectifyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageListFileTypes = new System.Windows.Forms.ImageList(this.components);
             this.statusStripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
@@ -409,6 +411,13 @@
             this.aboutRectifyToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.aboutRectifyToolStripMenuItem.Text = "&About Rectify";
             // 
+            // imageListFileTypes
+            // 
+            this.imageListFileTypes.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListFileTypes.ImageStream")));
+            this.imageListFileTypes.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageListFileTypes.Images.SetKeyName(0, "photo");
+            this.imageListFileTypes.Images.SetKeyName(1, "video");
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -473,6 +482,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colDate;
         private System.Windows.Forms.DataGridViewImageColumn colErrorImage;
         private System.Windows.Forms.DataGridViewTextBoxColumn colErrorText;
+        private System.Windows.Forms.ImageList imageListFileTypes;
     }
 }
 

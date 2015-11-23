@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using RectifyLib;
 using RectifyLib.Analysis;
+using RectifyLib.Correct;
 using RectifyUI.DataGridView;
 
 
@@ -21,7 +22,9 @@ namespace RectifyUI
         private static log4net.ILog Log = log4net.LogManager.GetLogger(typeof(MainForm));
 
         private readonly Analyser _analyser = new Analyser();
-        private readonly TaskScheduler _uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+        private readonly Corrector _corrector = new Corrector();
+
+        private readonly TaskScheduler _uiScheduler;
 
         public MainForm()
         {
@@ -35,31 +38,38 @@ namespace RectifyUI
             toolStripProgresslbl.Visible = false;
             toolStripCancelBtn.Visible = false;
 
-            // We want to report on the background progress of the analyser
-            _analyser.AnalysisProgress += _analyser_AnalysisProgress;
+            // Must create the synchronization context here, otherwise it will not be correct
+            _uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+
+            // We want to report on the background progress of the background workers
+            _analyser.BackgroundProgress += _analyser_AnalysisProgress;
+            _corrector.BackgroundProgress += _corrector_BackgroundProgress;
+
         }
 
-        private void _analyser_AnalysisProgress(object sender, AnalyserProgressArgs e)
+        private void UpdateProgress(int totalSteps, int currentStep)
         {
-            if (e == null || e.TotalFiles <= 0)
+            if (totalSteps <= 0)
                 return;
 
             // Set the necessary control values for the bar (safer to do every time)
-            toolStripProgress.Maximum = e.TotalFiles;
+            toolStripProgress.Maximum = totalSteps;
             toolStripProgress.Minimum = 0;
-
-            if (!toolStripProgress.Visible)
-            {
-                toolStripProgress.Visible = true;
-                toolStripProgresslbl.Visible = true;
-                toolStripCancelBtn.Visible = true;
-            }
+            toolStripProgress.Visible = true;
 
             // Advance the progress bar
-            toolStripProgress.Value = e.CompletedFiles;
+            toolStripProgress.Value = currentStep;
+        }
 
-            // Update the progress message
-            toolStripStatuslbl.Text = $"{e.DirectoryName} > {Path.GetFileName(e.FilePath)}";
+        private void HideProgressAndEnableUI()
+        {
+            // Hide the progress indicators
+            toolStripProgress.Visible = false;
+            toolStripProgresslbl.Visible = false;
+            toolStripCancelBtn.Visible = false;
+
+            // Enable the UI again
+            splitMain.Enabled = true;
         }
 
         private void btnAnalyseLibrary_Click(object sender, EventArgs e)
@@ -72,9 +82,10 @@ namespace RectifyUI
                 return;
             }
 
+            // Disable all the interactable UI
             splitMain.Enabled = false;
 
-            _analyser.RunAnalysisAsync(dirpath)
+            _analyser.RunAsync(dirpath)
                      .ContinueWith(
                         task =>
                         {
@@ -100,19 +111,27 @@ namespace RectifyUI
                             }
                             finally
                             {
-                                // Hide the progress indicators
-                                toolStripProgress.Visible = false;
-                                toolStripProgresslbl.Visible = false;
-                                toolStripCancelBtn.Visible = false;
-
-                                // Enable the UI again
-                                splitMain.Enabled = true;
+                                HideProgressAndEnableUI();
                             }
                         },
                         scheduler: _uiScheduler,
                         continuationOptions: TaskContinuationOptions.AttachedToParent, 
                         cancellationToken:CancellationToken.None);
         }
+
+        private void _analyser_AnalysisProgress(object sender, AnalyserProgressArgs e)
+        {
+            UpdateProgress(e.TotalSteps, e.CurrentStep);
+
+            toolStripProgresslbl.Visible = true;
+            toolStripProgresslbl.Text = "Analysing";
+            toolStripCancelBtn.Visible = true;
+
+            // Update the progress message
+            toolStripStatuslbl.Text = $"{e.DirectoryName} > {Path.GetFileName(e.FilePath)}";
+        }
+
+        #region Grid Updating and Interaction Handling
 
         private void PopulateGrid(AnalysisResults result)
         {
@@ -144,6 +163,25 @@ namespace RectifyUI
                         dataGridMain.Rows.Add(row);
                     }
                 }
+
+                // Store the results that are being displayed as a part of the grid
+                this.dataGridMain.Tag = result;
+            }
+            finally
+            {
+                this.dataGridMain.ResumeDrawing(true);
+            }
+        }
+
+        private void ResetMainGrid()
+        {
+            this.dataGridMain.SuspendDrawing();
+            try
+            {
+                this.dataGridMain.Rows.Clear();
+
+                // Remove the results
+                this.dataGridMain.Tag = null;
             }
             finally
             {
@@ -153,7 +191,7 @@ namespace RectifyUI
 
         private void toolStripCancelBtn_ButtonClick(object sender, EventArgs e)
         {
-            _analyser.CancelAnalysis();
+            _analyser.CancelAsync();
         }
 
         private void dataGridMain_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
@@ -207,10 +245,79 @@ namespace RectifyUI
             
         }
 
+        #endregion
 
         private void btnRectifySelected_Click(object sender, EventArgs e)
         {
+            var results = this.dataGridMain.Tag as AnalysisResults;
+            if (results == null)
+            {
+                MessageBox.Show("No results available");
+                return;
+            }
 
+            // Collect the selected results from the grid
+            var selectedFiles = this.dataGridMain.Rows.OfType<DataGridViewRow>()
+                                                      .Where(row =>
+                                                                {
+                                                                    var value = row.Cells[colSelected.Index].Value;
+                                                                    return value != null && (bool) value;
+                                                                })
+                                                      .Select(row => row.Tag as FileAnalysis)
+                                                      .ToArray();
+
+            RunCorrector(selectedFiles);
+        }
+
+        private void RunCorrector(FileAnalysis[] selectedFiles)
+        {
+            // Disable all the interactable UI
+            splitMain.Enabled = false;
+
+            _corrector.RunAsync(selectedFiles)
+                      .ContinueWith(
+                task =>
+                {
+                    try
+                    {
+                        if (task.IsCanceled)
+                        {
+                            toolStripStatuslbl.Text = "Cancelled";
+                        }
+                        else if (task.IsFaulted)
+                        {
+                            toolStripStatuslbl.Text = "Error";
+                        }
+                        else if (task.IsCompleted)
+                        {
+                            toolStripStatuslbl.Text = "Completed";
+                            ResetMainGrid();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // TODO: show errors, how?
+                    }
+                    finally
+                    {
+                        HideProgressAndEnableUI();
+                    }
+                },
+                scheduler: _uiScheduler,
+                continuationOptions: TaskContinuationOptions.AttachedToParent,
+                cancellationToken: CancellationToken.None);
+        }
+
+        private void _corrector_BackgroundProgress(object sender, CorrectorProgressArgs e)
+        {
+            UpdateProgress(e.TotalSteps, e.CurrentStep);
+
+            toolStripProgresslbl.Visible = true;
+            toolStripProgresslbl.Text = "Moving Files";
+            toolStripCancelBtn.Visible = true;
+
+            // Update the progress message
+            toolStripStatuslbl.Text = $"Moving {Path.GetFileName(e.FilePathFrom)} to {Path.GetDirectoryName(e.FilePathTo)}";
         }
     }
 }

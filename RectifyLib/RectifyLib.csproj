@@ -60,6 +60,11 @@
     <Compile Include="Analysis\AnalysisResults.cs" />
     <Compile Include="Analysis\DirectoryAnalysis.cs" />
     <Compile Include="Analysis\FileAnalysis.cs" />
+    <Compile Include="AsyncBackgroundProcessor.cs" />
+    <Compile Include="Correct\CorrectorProgressArgs.cs" />
+    <Compile Include="Correct\CorrectionResults.cs" />
+    <Compile Include="Correct\Corrector.cs" />
+    <Compile Include="Correct\FileCorrectionResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThreadingExtensions.cs" />
   </ItemGroup>
