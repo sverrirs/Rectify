@@ -9,9 +9,9 @@ namespace RectifyUI
         #region Redraw Suspend/Resume
         // From: http://stackoverflow.com/a/778133/779521
 
-        [DllImport("user32.dll", EntryPoint = "SendMessageA", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
-        private static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
-        private const int WM_SETREDRAW = 0xB;
+        [DllImport("user32.dll", EntryPoint = "SendMessageW", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern IntPtr SendMessage(IntPtr hwnd, uint wMsg, IntPtr wParam, IntPtr lParam);
+        private const uint WM_SETREDRAW = 0xB;
 
         /// <summary>
         /// Disable window drawing via WM_SETREDRAW
@@ -19,7 +19,7 @@ namespace RectifyUI
         /// <param name="target"></param>
         public static void SuspendDrawing(this Control target)
         {
-            SendMessage(target.Handle, WM_SETREDRAW, 0, 0);
+            SendMessage(target.Handle, WM_SETREDRAW, IntPtr.Zero, IntPtr.Zero);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace RectifyUI
         /// </summary>
         public static void ResumeDrawing(this Control target, bool redraw)
         {
-            SendMessage(target.Handle, WM_SETREDRAW, 1, 0);
+            SendMessage(target.Handle, WM_SETREDRAW, IntPtr.Zero + 1, IntPtr.Zero);
 
             if (redraw)
             {
