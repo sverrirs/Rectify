@@ -26,6 +26,47 @@ namespace RectifyUI
 
         private readonly TaskScheduler _uiScheduler;
 
+        /*
+         TODO:
+            X Right click menu to check/uncheck all selected items in the grid or when multiple items are selected a single check will toggle them all
+            - Destination folders will also retain any suffix naming that the originating folder had (e.g. 2013-05-05 Hulda gusti london)
+            - Type and Error icons are wrong
+            X Correct casing in file ending column (all lower case)
+            - Show rationale for date selection and detection in column
+            - Allow inclusion/exclusion of columns in grid and save its state
+            - Consider master-detail grid (source folder or destination folder tree)
+            - Report process and don't lock up while program is scanning folders
+            - Show x of n folders scanned next to progress bar
+            - Exclusion of certain file endings (zip, thm etc)
+            - Exclusion of certain folders
+            - Allow filtering of grid
+                - Show only conflicts in source folder *e.g. files that need to be renamed
+                - Show possible duplicates (in source folder)
+            - Show total file count found that need rectification
+            - Make analyse and rectify buttons bigger and colored
+            - Program Icon!
+            - Create a reverse file, meaning log all the actions taken, source to destination copy so that the action can be undoed
+            - Validate date check for snapchat and photogrid pictures and pictures which name cannot be used to detect date
+            - Extend the filename date extraction to handle more prefixes
+                - 2008-10-05\060920081906.jpg
+                - 
+            - Attempt to detect which program took picture (e.g. is there meta info or file name pattern that can be read?) possible filter option as well
+            - Allow user to mark images as "incorrectly identified as needing repair" store this information for future use and ensure that these
+              suggestions do not show up again
+            - Implement a "diff" feature so that the app will only attempt to process new files created in the location since last run
+                - Store last run in a file in root folder and some validation hashes etc to detect folder changes
+            - New columns
+                - File size
+                - File complete metadata dump
+                - ExtInf raw information
+            - Store previous x locations scanned and allow user to select from dropdown
+            - Filter based on file ending
+            X Show folder on disk option
+            - Double click file entry to open file in default system viewer
+            X Right click menu item to open file properties window for selected file(s) http://stackoverflow.com/a/1281485/779521
+            - Confirm close if user has un-rectified files in the view when closing
+             */
+
         public MainForm()
         {
             InitializeComponent();
@@ -86,37 +127,37 @@ namespace RectifyUI
             splitMain.Enabled = false;
 
             _analyser.RunAsync(dirpath)
-                     .ContinueWith(
-                        task =>
+                .ContinueWith(
+                    task =>
+                    {
+                        try
                         {
-                            try
+                            if (task.IsCanceled)
                             {
-                                if (task.IsCanceled)
-                                {
-                                    toolStripStatuslbl.Text = "Cancelled";
-                                }
-                                else if (task.IsFaulted)
-                                {
-                                    toolStripStatuslbl.Text = "Error";
-                                }
-                                else if (task.IsCompleted)
-                                {
-                                    toolStripStatuslbl.Text = "Completed";
-                                    PopulateGrid(task.Result);
-                                }
+                                toolStripStatuslbl.Text = "Cancelled";
                             }
-                            catch (Exception ex)
+                            else if (task.IsFaulted)
                             {
-                                // TODO: show errors, how?
+                                toolStripStatuslbl.Text = "Error";
                             }
-                            finally
+                            else if (task.IsCompleted)
                             {
-                                HideProgressAndEnableUI();
+                                toolStripStatuslbl.Text = "Completed";
+                                PopulateGrid(task.Result);
                             }
-                        },
-                        scheduler: _uiScheduler,
-                        continuationOptions: TaskContinuationOptions.AttachedToParent, 
-                        cancellationToken:CancellationToken.None);
+                        }
+                        catch (Exception ex)
+                        {
+                            // TODO: show errors, how?
+                        }
+                        finally
+                        {
+                            HideProgressAndEnableUI();
+                        }
+                    },
+                    scheduler: _uiScheduler,
+                    continuationOptions: TaskContinuationOptions.AttachedToParent,
+                    cancellationToken: CancellationToken.None);
         }
 
         private void _analyser_AnalysisProgress(object sender, AnalyserProgressArgs e)
@@ -139,7 +180,7 @@ namespace RectifyUI
             try
             {
                 this.dataGridMain.Rows.Clear();
-                
+
                 foreach (var dir in result.Directories)
                 {
                     foreach (var file in dir.Files)
@@ -156,9 +197,9 @@ namespace RectifyUI
                         row.Cells[colSource.Index].Value = file.FilePath;
                         row.Cells[colDestination.Index].Value = file.CorrectedFilePath;
                         row.Cells[colDate.Index].Value = file.DateCategoryDetected;
-                        row.Cells[colFileTypeText.Index].Value = Path.GetExtension(file.FilePath)?.Trim('.');
+                        row.Cells[colFileTypeText.Index].Value = Path.GetExtension(file.FilePath)?.Trim('.').ToLower();
                         //row.Cells[colFileTypeImage.Name].Value = 
-                        
+
 
                         dataGridMain.Rows.Add(row);
                     }
@@ -192,26 +233,45 @@ namespace RectifyUI
         private void toolStripCancelBtn_ButtonClick(object sender, EventArgs e)
         {
             _analyser.CancelAsync();
-        }
+        } 
 
-        private void dataGridMain_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+         private void dataGridMain_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
             // End of edition on each click on column of checkbox
-            if (e.ColumnIndex == colSelected.Index && e.RowIndex != -1)
+             if (e.ColumnIndex == colSelected.Index && e.RowIndex != -1)
+                 ToggleCheckedForRow(e.RowIndex);
+        }
+
+        private void ToggleCheckedForRow(int rowIndex, bool? isChecked = null)
+        {
+            ToggleCheckedForRow(new[] { rowIndex }, isChecked);
+        }
+
+        private void ToggleCheckedForRow(int[] rowIndexes, bool? isChecked = null)
+        {
+            foreach (var rowIndex in rowIndexes)
             {
-                DataGridViewCell cell = this.dataGridMain.Rows[e.RowIndex].Cells[colSelected.Index];
-                cell.Value = cell.Value == null ? true : !(bool)cell.Value;
+                if (rowIndex == -1 || dataGridMain.RowCount <= rowIndex)
+                    continue;
 
-                UpdateCheckAllValueBasedOnCheckedStatesInMainGrid();
 
-                this.dataGridMain.EndEdit();
+                DataGridViewCell cell = this.dataGridMain.Rows[rowIndex].Cells[colSelected.Index];
+
+                // If the checked parameter is set then assign that value, otherwise toggle the checkmark
+                if( isChecked.HasValue )
+                    cell.Value = isChecked;
+                else
+                    cell.Value = cell.Value == null ? true : !(bool)cell.Value;
             }
+
+            UpdateCheckAllValueBasedOnCheckedStatesInMainGrid();
+            this.dataGridMain.EndEdit();
         }
 
         private void UpdateCheckAllValueBasedOnCheckedStatesInMainGrid()
         {
             // Now figure out the state of the "select all" checkbox
-            int selectedCount = this.dataGridMain.Rows.Cast<DataGridViewRow>().Count(row => (bool)row.Cells[colSelected.Index].Value);
+            int selectedCount = this.dataGridMain.Rows.Cast<DataGridViewRow>().Count(row => (bool) row.Cells[colSelected.Index].Value);
             if (selectedCount <= 0)
                 cbSelectAllRows.CheckState = CheckState.Unchecked;
             else if (selectedCount == this.dataGridMain.RowCount)
@@ -242,7 +302,7 @@ namespace RectifyUI
             {
                 this.dataGridMain.ResumeDrawing(true);
             }
-            
+
         }
 
         #endregion
@@ -257,55 +317,77 @@ namespace RectifyUI
             }
 
             // Collect the selected results from the grid
-            var selectedFiles = this.dataGridMain.Rows.OfType<DataGridViewRow>()
-                                                      .Where(row =>
-                                                                {
-                                                                    var value = row.Cells[colSelected.Index].Value;
-                                                                    return value != null && (bool) value;
-                                                                })
-                                                      .Select(row => row.Tag as FileAnalysis)
-                                                      .ToArray();
+            var selectedFiles = GetCheckedRowsInGrid().Select(row => row.Tag as FileAnalysis)
+                .ToArray();
 
             RunCorrector(selectedFiles);
         }
 
+        /// <summary>
+        /// Returns all rows in the grid that the user has placed a checkmark against. 
+        /// These cells may or may not be a part of the current selection of rows in the grid.
+        /// To only get the selected cells use <see cref="GetSelectedRowsInGrid"/>.
+        /// </summary>
+        private IEnumerable<DataGridViewRow> GetCheckedRowsInGrid()
+        {
+            return this.dataGridMain.Rows.OfType<DataGridViewRow>()
+                .Where(row =>
+                {
+                    var value = row.Cells[colSelected.Index].Value;
+                    return value != null && (bool) value;
+                });
+        }
+
+        /// <summary>
+        /// Returns all rows that are selected in the grid. This indicates rows that the user has clicked and are highlighted.
+        /// For checked cells use <see cref="GetCheckedRowsInGrid"/>.
+        /// </summary>
+        private IEnumerable<DataGridViewRow> GetSelectedRowsInGrid()
+        {
+            return this.dataGridMain.SelectedRows.OfType<DataGridViewRow>();
+        }
+
         private void RunCorrector(FileAnalysis[] selectedFiles)
         {
+            // If nothing is selected exit
+            if (selectedFiles == null || selectedFiles.Length <= 0)
+                return;
+
             // Disable all the interactable UI
             splitMain.Enabled = false;
 
             _corrector.RunAsync(selectedFiles)
-                      .ContinueWith(
-                task =>
-                {
-                    try
+                .ContinueWith(
+                    task =>
                     {
-                        if (task.IsCanceled)
+                        try
                         {
-                            toolStripStatuslbl.Text = "Cancelled";
+                            if (task.IsCanceled)
+                            {
+                                toolStripStatuslbl.Text = "Cancelled";
+                            }
+                            else if (task.IsFaulted)
+                            {
+                                toolStripStatuslbl.Text = "Error";
+                            }
+                            else if (task.IsCompleted)
+                            {
+                                toolStripStatuslbl.Text = "Completed";
+                                ResetMainGrid();
+                            }
                         }
-                        else if (task.IsFaulted)
+                        catch (Exception ex)
                         {
-                            toolStripStatuslbl.Text = "Error";
+                            // TODO: show errors, how?
                         }
-                        else if (task.IsCompleted)
+                        finally
                         {
-                            toolStripStatuslbl.Text = "Completed";
-                            ResetMainGrid();
+                            HideProgressAndEnableUI();
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        // TODO: show errors, how?
-                    }
-                    finally
-                    {
-                        HideProgressAndEnableUI();
-                    }
-                },
-                scheduler: _uiScheduler,
-                continuationOptions: TaskContinuationOptions.AttachedToParent,
-                cancellationToken: CancellationToken.None);
+                    },
+                    scheduler: _uiScheduler,
+                    continuationOptions: TaskContinuationOptions.AttachedToParent,
+                    cancellationToken: CancellationToken.None);
         }
 
         private void _corrector_BackgroundProgress(object sender, CorrectorProgressArgs e)
@@ -318,6 +400,68 @@ namespace RectifyUI
 
             // Update the progress message
             toolStripStatuslbl.Text = $"Moving {Path.GetFileName(e.FilePathFrom)} to {Path.GetDirectoryName(e.FilePathTo)}";
+        }
+
+        private void dataGridMain_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                HandleGridRightClick(e);
+            }
+        }
+        
+
+        private void HandleGridRightClick(MouseEventArgs mouseEvent)
+        {
+            // Clear the tag first
+            ctxMenuGrid.Tag = null;
+
+            // When the right mouse button is clicked on the grid I populate the Tag for the context menu with the selected cells or if none are selected
+            // the row that is directly under the mouse cursor
+            if (this.dataGridMain.SelectedRows.Count <= 0)
+            {
+                // Find out what row is under the mouse
+                var rowIndex = this.dataGridMain.HitTest(mouseEvent.X, mouseEvent.Y).RowIndex;
+                if (rowIndex == -1) // No row available
+                    return;
+
+                // Clear all other selections before making a new selection
+                this.dataGridMain.ClearSelection();
+
+                // Select the found DataGridViewRow
+                this.dataGridMain.Rows[rowIndex].Selected = true;
+            }
+
+            // Now get all selected rows and extract the Tag from them
+            ctxMenuGrid.Tag = GetSelectedRowsInGrid().Select(row => row.Tag as FileAnalysis).ToArray();
+        }
+
+        private void ctxMenuItemShowFileProperties_Click(object sender, EventArgs e)
+        {
+            var files = ctxMenuGrid.Tag as FileAnalysis[];
+            if (files == null || files.Length <= 0)
+                return;
+
+            Win32.OpenFileProperties(files.Select(x => x.FilePath).First());
+        }
+
+        private void ctxMenuItemLocateFileOnDisk_Click(object sender, EventArgs e)
+        {
+            var files = ctxMenuGrid.Tag as FileAnalysis[];
+            if (files == null || files.Length <= 0)
+                return;
+
+            Win32.OpenFileLocation(files.Select(x => Path.GetDirectoryName(x.FilePath)).First());
+        }
+
+        private void ctxMenuItemCheckSelected_Click(object sender, EventArgs e)
+        {
+            ToggleCheckedForRow(GetSelectedRowsInGrid().Select(x=> x.Index).ToArray(), true);
+        }
+
+        private void ctxMenuItemUncheckSelected_Click(object sender, EventArgs e)
+        {
+            ToggleCheckedForRow(GetSelectedRowsInGrid().Select(x => x.Index).ToArray(), false);
         }
     }
 }

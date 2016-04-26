@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectifyUI", "RectifyUI\Rect
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectifyLib", "RectifyLib\RectifyLib.csproj", "{CDE42737-DB61-4186-AA19-7F4672C03C1F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectifyWPF", "RectifyWPF\RectifyWPF.csproj", "{44AD6FBA-F33A-4860-A0E2-45E4F8A44B78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{CDE42737-DB61-4186-AA19-7F4672C03C1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDE42737-DB61-4186-AA19-7F4672C03C1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDE42737-DB61-4186-AA19-7F4672C03C1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44AD6FBA-F33A-4860-A0E2-45E4F8A44B78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44AD6FBA-F33A-4860-A0E2-45E4F8A44B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44AD6FBA-F33A-4860-A0E2-45E4F8A44B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44AD6FBA-F33A-4860-A0E2-45E4F8A44B78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

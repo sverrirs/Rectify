@@ -106,8 +106,8 @@ namespace RectifyLib.Analysis
             if (dirInfo.DateCategory == DateTime.MinValue)
                 return false;
             
-            if (!dirInfo.Name.StartsWith("2015-"))
-                return false;
+            /*if (!dirInfo.Name.StartsWith("2015-"))
+                return false;*/
 
             // All is OK, parse the directory
             return true;

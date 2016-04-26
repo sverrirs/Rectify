@@ -52,6 +52,12 @@
             this.colDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colErrorImage = new System.Windows.Forms.DataGridViewImageColumn();
             this.colErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ctxMenuGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ctxMenuItemCheckSelected = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxMenuItemUncheckSelected = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.ctxMenuItemShowFileProperties = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxMenuItemShowDetails = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlAnalysisResults = new System.Windows.Forms.Panel();
             this.lblAnalysisResults = new System.Windows.Forms.Label();
             this.pnlActionChanges = new System.Windows.Forms.Panel();
@@ -63,12 +69,14 @@
             this.mItemAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutRectifyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageListFileTypes = new System.Windows.Forms.ImageList(this.components);
+            this.ctxMenuItemLocateFileOnDisk = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.Panel2.SuspendLayout();
             this.splitMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridMain)).BeginInit();
+            this.ctxMenuGrid.SuspendLayout();
             this.pnlAnalysisResults.SuspendLayout();
             this.pnlActionChanges.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -203,9 +211,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 17);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(76, 13);
+            this.label1.Size = new System.Drawing.Size(72, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Picasa Library:";
+            this.label1.Text = "Photo Library:";
             // 
             // dataGridMain
             // 
@@ -224,13 +232,15 @@
             this.colDate,
             this.colErrorImage,
             this.colErrorText});
+            this.dataGridMain.ContextMenuStrip = this.ctxMenuGrid;
             this.dataGridMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridMain.Location = new System.Drawing.Point(0, 23);
             this.dataGridMain.Name = "dataGridMain";
             this.dataGridMain.RowHeadersVisible = false;
-            this.dataGridMain.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.dataGridMain.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridMain.Size = new System.Drawing.Size(954, 754);
             this.dataGridMain.TabIndex = 3;
+            this.dataGridMain.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridMain_CellMouseDown);
             this.dataGridMain.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridMain_CellMouseUp);
             // 
             // colSelected
@@ -319,6 +329,50 @@
             this.colErrorText.Name = "colErrorText";
             this.colErrorText.ReadOnly = true;
             this.colErrorText.Width = 250;
+            // 
+            // ctxMenuGrid
+            // 
+            this.ctxMenuGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxMenuItemCheckSelected,
+            this.ctxMenuItemUncheckSelected,
+            this.toolStripMenuItem1,
+            this.ctxMenuItemShowFileProperties,
+            this.ctxMenuItemLocateFileOnDisk,
+            this.ctxMenuItemShowDetails});
+            this.ctxMenuGrid.Name = "ctxMenuGrid";
+            this.ctxMenuGrid.Size = new System.Drawing.Size(167, 142);
+            // 
+            // ctxMenuItemCheckSelected
+            // 
+            this.ctxMenuItemCheckSelected.Name = "ctxMenuItemCheckSelected";
+            this.ctxMenuItemCheckSelected.Size = new System.Drawing.Size(166, 22);
+            this.ctxMenuItemCheckSelected.Text = "&Check selected";
+            this.ctxMenuItemCheckSelected.Click += new System.EventHandler(this.ctxMenuItemCheckSelected_Click);
+            // 
+            // ctxMenuItemUncheckSelected
+            // 
+            this.ctxMenuItemUncheckSelected.Name = "ctxMenuItemUncheckSelected";
+            this.ctxMenuItemUncheckSelected.Size = new System.Drawing.Size(166, 22);
+            this.ctxMenuItemUncheckSelected.Text = "&Uncheck selected";
+            this.ctxMenuItemUncheckSelected.Click += new System.EventHandler(this.ctxMenuItemUncheckSelected_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(163, 6);
+            // 
+            // ctxMenuItemShowFileProperties
+            // 
+            this.ctxMenuItemShowFileProperties.Name = "ctxMenuItemShowFileProperties";
+            this.ctxMenuItemShowFileProperties.Size = new System.Drawing.Size(166, 22);
+            this.ctxMenuItemShowFileProperties.Text = "File &Properties...";
+            this.ctxMenuItemShowFileProperties.Click += new System.EventHandler(this.ctxMenuItemShowFileProperties_Click);
+            // 
+            // ctxMenuItemShowDetails
+            // 
+            this.ctxMenuItemShowDetails.Name = "ctxMenuItemShowDetails";
+            this.ctxMenuItemShowDetails.Size = new System.Drawing.Size(166, 22);
+            this.ctxMenuItemShowDetails.Text = "&Details...";
             // 
             // pnlAnalysisResults
             // 
@@ -418,6 +472,13 @@
             this.imageListFileTypes.Images.SetKeyName(0, "photo");
             this.imageListFileTypes.Images.SetKeyName(1, "video");
             // 
+            // ctxMenuItemLocateFileOnDisk
+            // 
+            this.ctxMenuItemLocateFileOnDisk.Name = "ctxMenuItemLocateFileOnDisk";
+            this.ctxMenuItemLocateFileOnDisk.Size = new System.Drawing.Size(166, 22);
+            this.ctxMenuItemLocateFileOnDisk.Text = "Locate on Disk...";
+            this.ctxMenuItemLocateFileOnDisk.Click += new System.EventHandler(this.ctxMenuItemLocateFileOnDisk_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -429,7 +490,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.ShowIcon = false;
-            this.Text = "Rectify | for Google Picasa";
+            this.Text = "Rectify | for Google Picasa and other photo apps";
             this.statusStripMain.ResumeLayout(false);
             this.statusStripMain.PerformLayout();
             this.splitMain.Panel1.ResumeLayout(false);
@@ -438,6 +499,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).EndInit();
             this.splitMain.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridMain)).EndInit();
+            this.ctxMenuGrid.ResumeLayout(false);
             this.pnlAnalysisResults.ResumeLayout(false);
             this.pnlActionChanges.ResumeLayout(false);
             this.pnlActionChanges.PerformLayout();
@@ -483,6 +545,13 @@
         private System.Windows.Forms.DataGridViewImageColumn colErrorImage;
         private System.Windows.Forms.DataGridViewTextBoxColumn colErrorText;
         private System.Windows.Forms.ImageList imageListFileTypes;
+        private System.Windows.Forms.ContextMenuStrip ctxMenuGrid;
+        private System.Windows.Forms.ToolStripMenuItem ctxMenuItemCheckSelected;
+        private System.Windows.Forms.ToolStripMenuItem ctxMenuItemUncheckSelected;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem ctxMenuItemShowFileProperties;
+        private System.Windows.Forms.ToolStripMenuItem ctxMenuItemShowDetails;
+        private System.Windows.Forms.ToolStripMenuItem ctxMenuItemLocateFileOnDisk;
     }
 }
 

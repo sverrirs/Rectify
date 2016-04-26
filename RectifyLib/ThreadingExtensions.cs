@@ -9,7 +9,12 @@ namespace RectifyLib
     /// </summary>
     public static class ThreadingExtensions
     {
-        // Extension method which marshals events back onto the main thread
+        /// <summary>
+        /// Extension method which marshals events back onto the main thread for either WPF or Winforms
+        /// </summary>
+        /// <param name="multicast"></param>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public static void Raise(this MulticastDelegate multicast, object sender, EventArgs args)
         {
             foreach (Delegate del in multicast.GetInvocationList())
@@ -38,7 +43,13 @@ namespace RectifyLib
                 }
             }
         }
-        // Extension method which marshals actions back onto the main thread
+
+        /// <summary>
+        /// Extension method which marshals actions back onto the main thread
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="args"></param>
         public static void Raise<T>(this Action<T> action, T args)
         {
             // Try for WPF first

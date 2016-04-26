@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace RectifyLib
 {
+    /// <summary>
+    /// Base class for the progress argument classes used by the <see cref="AsyncBackgroundProcessor{TResult,TProgressEventArgs,TProcessArgs}"/>
+    /// class <see cref="AsyncBackgroundProcessor{TResult,TProgressEventArgs,TProcessArgs}.BackgroundProgress"/> event
+    /// </summary>
     public abstract class BackgroundProgressArgs : EventArgs
     {
         /// <summary>
@@ -32,6 +36,14 @@ namespace RectifyLib
         }
     }
 
+    /// <summary>
+    /// Enables a background worker-esque functionality using the .NET task framework. All progress events and completion handling are raised
+    /// on the main program thread and require no marshalling between background and foreground threads.
+    /// </summary>
+    /// <typeparam name="TResult">The return type of the background call</typeparam>
+    /// <typeparam name="TProgressEventArgs">Type of progress events that are used when <see cref="BackgroundProgress"/> 
+    /// is raised during execution</typeparam>
+    /// <typeparam name="TProcessArgs">The arguments sent to the background process logic</typeparam>
     public abstract class AsyncBackgroundProcessor<TResult, TProgressEventArgs, TProcessArgs> where TProgressEventArgs : BackgroundProgressArgs
     {
         private CancellationTokenSource _cancelSource = null;
@@ -66,12 +78,6 @@ namespace RectifyLib
         }
 
         /// <summary>
-        /// This function returns a functor that defines the background action to take
-        /// </summary>
-        /// <returns></returns>
-        protected abstract Func<TResult> CreateAsyncProcess(TProcessArgs args, CancellationToken cancellationToken);
-
-        /// <summary>
         /// Cancel an ongoing background job. If nothing is running or another cancellation is already 
         /// pending calling this funciton will have no effect.
         /// </summary>
@@ -80,5 +86,14 @@ namespace RectifyLib
             if (_cancelSource != null && !_cancelSource.IsCancellationRequested)
                 _cancelSource.Cancel();
         }
+
+        /// <summary>
+        /// This function returns a functor that defines the background action to take. This function must be implemented by the 
+        /// inheriting class and contains the core function that the processor should perform in the background. 
+        /// This function is called when the <see cref="RunAsync"/> function is invoked.
+        /// Call <see cref="OnBackgroundProgress"/> within this method body to report progress to subscribers.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract Func<TResult> CreateAsyncProcess(TProcessArgs args, CancellationToken cancellationToken);
     }
 }
