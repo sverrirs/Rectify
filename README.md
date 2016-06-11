@@ -1,9 +1,5 @@
-<link href='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' rel='image_src'/>
-<meta content='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' property='og:image'/>
-<meta content='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' name='twitter:image:src'/>
-
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb.png" alt="Rectify logo" />
+  <img src="https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png" alt="Rectify logo"  property="og:image" width="256"/>
 </p>
 
 # Rectify
@@ -21,3 +17,7 @@ The application is just a single Executable (.exe) that you can immediately laun
 <p align="center">
   <img src="https://raw.githubusercontent.com/sverrirs/Rectify/master/Docs/v2.0/screenshot.png" alt="Rectify's main screen" />
 </p>
+
+<link href='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' rel='image_src'/>
+<meta content='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' property='og:image'/>
+<meta content='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' name='twitter:image:src'/>
