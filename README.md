@@ -3,7 +3,7 @@
 </p>
 
 # Rectify
-Rectify is a Windows application that can automatically fix erroneous image and video imports from cameras and mobile devices. 
+Rectify is a Windows application that can automatically identify and correct image and video files that have had their shooting dates incorrectly identified during import and have consequently been misplaced in your computer photo library.
 
 Sometimes applications such as Google Picasa can incorrectly identify the shooting date on a image or video during import. This can cause the file to be misplaced in your photo library. 
 
@@ -17,6 +17,9 @@ The application is just a single Executable (.exe) that you can immediately laun
 <p align="center">
   <img src="https://raw.githubusercontent.com/sverrirs/Rectify/master/Docs/v2.0/screenshot.png" alt="Rectify's main screen" />
 </p>
+
+# Disclaimers
+Project icon courtesy of http://www.flaticon.com/packs/essential-element-set
 
 <link href='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' rel='image_src'/>
 <meta content='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' property='og:image'/>
