@@ -13,3 +13,7 @@ As an example a photo from January 21, 2016 might end up in your November 3, 200
 Download the application from the <a href="https://github.com/sverrirs/Rectify/releases">releases section</a>. 
 
 The application is just a single Executable (.exe) that you can immediately launch after downloading.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sverrirs/Rectify/master/Docs/v2.0/screenshot.png" alt="Rectify's main screen" />
+</p>
