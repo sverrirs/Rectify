@@ -57,6 +57,7 @@
             this.ctxMenuItemUncheckSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxMenuItemShowFileProperties = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxMenuItemLocateFileOnDisk = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxMenuItemShowDetails = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlAnalysisResults = new System.Windows.Forms.Panel();
             this.lblAnalysisResults = new System.Windows.Forms.Label();
@@ -64,12 +65,19 @@
             this.cbSelectAllRows = new System.Windows.Forms.CheckBox();
             this.btnRectifySelected = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mItemExitApplication = new System.Windows.Forms.ToolStripMenuItem();
-            this.mItemAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutRectifyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.mItemAboutRectify = new System.Windows.Forms.ToolStripMenuItem();
             this.imageListFileTypes = new System.Windows.Forms.ImageList(this.components);
-            this.ctxMenuItemLocateFileOnDisk = new System.Windows.Forms.ToolStripMenuItem();
+            this.flowLayoutLimitDate = new System.Windows.Forms.FlowLayoutPanel();
+            this.rbLimitNoLimits = new System.Windows.Forms.RadioButton();
+            this.rbLimitDate = new System.Windows.Forms.RadioButton();
+            this.rbLimitMonth = new System.Windows.Forms.RadioButton();
+            this.rbLimitYear = new System.Windows.Forms.RadioButton();
+            this.label2 = new System.Windows.Forms.Label();
+            this.mainHelpTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.dtpLimitsDateValue = new System.Windows.Forms.DateTimePicker();
             this.statusStripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
@@ -80,6 +88,7 @@
             this.pnlAnalysisResults.SuspendLayout();
             this.pnlActionChanges.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.flowLayoutLimitDate.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStripMain
@@ -89,9 +98,9 @@
             this.toolStripProgresslbl,
             this.toolStripProgress,
             this.toolStripCancelBtn});
-            this.statusStripMain.Location = new System.Drawing.Point(0, 916);
+            this.statusStripMain.Location = new System.Drawing.Point(0, 619);
             this.statusStripMain.Name = "statusStripMain";
-            this.statusStripMain.Size = new System.Drawing.Size(954, 22);
+            this.statusStripMain.Size = new System.Drawing.Size(716, 22);
             this.statusStripMain.TabIndex = 0;
             this.statusStripMain.Text = "statusStrip1";
             // 
@@ -99,7 +108,7 @@
             // 
             this.toolStripStatuslbl.AutoSize = false;
             this.toolStripStatuslbl.Name = "toolStripStatuslbl";
-            this.toolStripStatuslbl.Size = new System.Drawing.Size(521, 17);
+            this.toolStripStatuslbl.Size = new System.Drawing.Size(283, 17);
             this.toolStripStatuslbl.Spring = true;
             this.toolStripStatuslbl.Text = "Ready";
             this.toolStripStatuslbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -140,6 +149,8 @@
             // 
             // splitMain.Panel1
             // 
+            this.splitMain.Panel1.Controls.Add(this.label2);
+            this.splitMain.Panel1.Controls.Add(this.flowLayoutLimitDate);
             this.splitMain.Panel1.Controls.Add(this.btnAnalyseLibrary);
             this.splitMain.Panel1.Controls.Add(this.pnlAdvanced);
             this.splitMain.Panel1.Controls.Add(this.cbAdvanced);
@@ -152,14 +163,14 @@
             this.splitMain.Panel2.Controls.Add(this.dataGridMain);
             this.splitMain.Panel2.Controls.Add(this.pnlAnalysisResults);
             this.splitMain.Panel2.Controls.Add(this.pnlActionChanges);
-            this.splitMain.Size = new System.Drawing.Size(954, 892);
+            this.splitMain.Size = new System.Drawing.Size(716, 595);
             this.splitMain.SplitterDistance = 73;
             this.splitMain.TabIndex = 1;
             // 
             // btnAnalyseLibrary
             // 
             this.btnAnalyseLibrary.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAnalyseLibrary.Location = new System.Drawing.Point(867, 40);
+            this.btnAnalyseLibrary.Location = new System.Drawing.Point(629, 40);
             this.btnAnalyseLibrary.Name = "btnAnalyseLibrary";
             this.btnAnalyseLibrary.Size = new System.Drawing.Size(75, 23);
             this.btnAnalyseLibrary.TabIndex = 5;
@@ -173,7 +184,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlAdvanced.Location = new System.Drawing.Point(95, 172);
             this.pnlAdvanced.Name = "pnlAdvanced";
-            this.pnlAdvanced.Size = new System.Drawing.Size(847, 151);
+            this.pnlAdvanced.Size = new System.Drawing.Size(609, 151);
             this.pnlAdvanced.TabIndex = 4;
             // 
             // cbAdvanced
@@ -189,7 +200,7 @@
             // btnBrowsePicasaLibrary
             // 
             this.btnBrowsePicasaLibrary.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowsePicasaLibrary.Location = new System.Drawing.Point(908, 12);
+            this.btnBrowsePicasaLibrary.Location = new System.Drawing.Point(670, 12);
             this.btnBrowsePicasaLibrary.Name = "btnBrowsePicasaLibrary";
             this.btnBrowsePicasaLibrary.Size = new System.Drawing.Size(34, 23);
             this.btnBrowsePicasaLibrary.TabIndex = 2;
@@ -202,7 +213,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbPicasaLibraryPath.Location = new System.Drawing.Point(95, 14);
             this.tbPicasaLibraryPath.Name = "tbPicasaLibraryPath";
-            this.tbPicasaLibraryPath.Size = new System.Drawing.Size(807, 20);
+            this.tbPicasaLibraryPath.Size = new System.Drawing.Size(569, 20);
             this.tbPicasaLibraryPath.TabIndex = 1;
             this.tbPicasaLibraryPath.Text = "H:\\photos\\";
             // 
@@ -238,7 +249,7 @@
             this.dataGridMain.Name = "dataGridMain";
             this.dataGridMain.RowHeadersVisible = false;
             this.dataGridMain.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridMain.Size = new System.Drawing.Size(954, 754);
+            this.dataGridMain.Size = new System.Drawing.Size(716, 457);
             this.dataGridMain.TabIndex = 3;
             this.dataGridMain.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridMain_CellMouseDown);
             this.dataGridMain.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridMain_CellMouseUp);
@@ -340,7 +351,7 @@
             this.ctxMenuItemLocateFileOnDisk,
             this.ctxMenuItemShowDetails});
             this.ctxMenuGrid.Name = "ctxMenuGrid";
-            this.ctxMenuGrid.Size = new System.Drawing.Size(167, 142);
+            this.ctxMenuGrid.Size = new System.Drawing.Size(167, 120);
             // 
             // ctxMenuItemCheckSelected
             // 
@@ -368,6 +379,13 @@
             this.ctxMenuItemShowFileProperties.Text = "File &Properties...";
             this.ctxMenuItemShowFileProperties.Click += new System.EventHandler(this.ctxMenuItemShowFileProperties_Click);
             // 
+            // ctxMenuItemLocateFileOnDisk
+            // 
+            this.ctxMenuItemLocateFileOnDisk.Name = "ctxMenuItemLocateFileOnDisk";
+            this.ctxMenuItemLocateFileOnDisk.Size = new System.Drawing.Size(166, 22);
+            this.ctxMenuItemLocateFileOnDisk.Text = "Locate on Disk...";
+            this.ctxMenuItemLocateFileOnDisk.Click += new System.EventHandler(this.ctxMenuItemLocateFileOnDisk_Click);
+            // 
             // ctxMenuItemShowDetails
             // 
             this.ctxMenuItemShowDetails.Name = "ctxMenuItemShowDetails";
@@ -380,7 +398,7 @@
             this.pnlAnalysisResults.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlAnalysisResults.Location = new System.Drawing.Point(0, 0);
             this.pnlAnalysisResults.Name = "pnlAnalysisResults";
-            this.pnlAnalysisResults.Size = new System.Drawing.Size(954, 23);
+            this.pnlAnalysisResults.Size = new System.Drawing.Size(716, 23);
             this.pnlAnalysisResults.TabIndex = 2;
             // 
             // lblAnalysisResults
@@ -389,7 +407,7 @@
             this.lblAnalysisResults.Location = new System.Drawing.Point(0, 0);
             this.lblAnalysisResults.Name = "lblAnalysisResults";
             this.lblAnalysisResults.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this.lblAnalysisResults.Size = new System.Drawing.Size(954, 23);
+            this.lblAnalysisResults.Size = new System.Drawing.Size(716, 23);
             this.lblAnalysisResults.TabIndex = 0;
             this.lblAnalysisResults.Text = "label2";
             // 
@@ -398,9 +416,9 @@
             this.pnlActionChanges.Controls.Add(this.cbSelectAllRows);
             this.pnlActionChanges.Controls.Add(this.btnRectifySelected);
             this.pnlActionChanges.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlActionChanges.Location = new System.Drawing.Point(0, 777);
+            this.pnlActionChanges.Location = new System.Drawing.Point(0, 480);
             this.pnlActionChanges.Name = "pnlActionChanges";
-            this.pnlActionChanges.Size = new System.Drawing.Size(954, 38);
+            this.pnlActionChanges.Size = new System.Drawing.Size(716, 38);
             this.pnlActionChanges.TabIndex = 1;
             // 
             // cbSelectAllRows
@@ -418,7 +436,7 @@
             // btnRectifySelected
             // 
             this.btnRectifySelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRectifySelected.Location = new System.Drawing.Point(827, 6);
+            this.btnRectifySelected.Location = new System.Drawing.Point(589, 6);
             this.btnRectifySelected.Name = "btnRectifySelected";
             this.btnRectifySelected.Size = new System.Drawing.Size(115, 23);
             this.btnRectifySelected.TabIndex = 1;
@@ -429,41 +447,43 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.mItemAbout});
+            this.menuFile,
+            this.menuHelp});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(954, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(716, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // fileToolStripMenuItem
+            // menuFile
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mItemExitApplication});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "&File";
+            this.menuFile.Name = "menuFile";
+            this.menuFile.Size = new System.Drawing.Size(37, 20);
+            this.menuFile.Text = "&File";
             // 
             // mItemExitApplication
             // 
             this.mItemExitApplication.Name = "mItemExitApplication";
-            this.mItemExitApplication.Size = new System.Drawing.Size(92, 22);
+            this.mItemExitApplication.Size = new System.Drawing.Size(152, 22);
             this.mItemExitApplication.Text = "&Exit";
+            this.mItemExitApplication.Click += new System.EventHandler(this.mItemExitApplication_Click);
             // 
-            // mItemAbout
+            // menuHelp
             // 
-            this.mItemAbout.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutRectifyToolStripMenuItem});
-            this.mItemAbout.Name = "mItemAbout";
-            this.mItemAbout.Size = new System.Drawing.Size(44, 20);
-            this.mItemAbout.Text = "&Help";
+            this.menuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mItemAboutRectify});
+            this.menuHelp.Name = "menuHelp";
+            this.menuHelp.Size = new System.Drawing.Size(44, 20);
+            this.menuHelp.Text = "&Help";
             // 
-            // aboutRectifyToolStripMenuItem
+            // mItemAboutRectify
             // 
-            this.aboutRectifyToolStripMenuItem.Name = "aboutRectifyToolStripMenuItem";
-            this.aboutRectifyToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.aboutRectifyToolStripMenuItem.Text = "&About Rectify";
+            this.mItemAboutRectify.Name = "mItemAboutRectify";
+            this.mItemAboutRectify.Size = new System.Drawing.Size(152, 22);
+            this.mItemAboutRectify.Text = "&About Rectify";
+            this.mItemAboutRectify.Click += new System.EventHandler(this.mItemAboutRectify_Click);
             // 
             // imageListFileTypes
             // 
@@ -472,25 +492,104 @@
             this.imageListFileTypes.Images.SetKeyName(0, "photo");
             this.imageListFileTypes.Images.SetKeyName(1, "video");
             // 
-            // ctxMenuItemLocateFileOnDisk
+            // flowLayoutLimitDate
             // 
-            this.ctxMenuItemLocateFileOnDisk.Name = "ctxMenuItemLocateFileOnDisk";
-            this.ctxMenuItemLocateFileOnDisk.Size = new System.Drawing.Size(166, 22);
-            this.ctxMenuItemLocateFileOnDisk.Text = "Locate on Disk...";
-            this.ctxMenuItemLocateFileOnDisk.Click += new System.EventHandler(this.ctxMenuItemLocateFileOnDisk_Click);
+            this.flowLayoutLimitDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutLimitDate.Controls.Add(this.rbLimitNoLimits);
+            this.flowLayoutLimitDate.Controls.Add(this.rbLimitDate);
+            this.flowLayoutLimitDate.Controls.Add(this.rbLimitMonth);
+            this.flowLayoutLimitDate.Controls.Add(this.rbLimitYear);
+            this.flowLayoutLimitDate.Controls.Add(this.dtpLimitsDateValue);
+            this.flowLayoutLimitDate.Location = new System.Drawing.Point(95, 40);
+            this.flowLayoutLimitDate.Name = "flowLayoutLimitDate";
+            this.flowLayoutLimitDate.Size = new System.Drawing.Size(528, 23);
+            this.flowLayoutLimitDate.TabIndex = 6;
+            // 
+            // rbLimitNoLimits
+            // 
+            this.rbLimitNoLimits.AutoSize = true;
+            this.rbLimitNoLimits.Checked = true;
+            this.rbLimitNoLimits.Location = new System.Drawing.Point(3, 3);
+            this.rbLimitNoLimits.Name = "rbLimitNoLimits";
+            this.rbLimitNoLimits.Size = new System.Drawing.Size(68, 17);
+            this.rbLimitNoLimits.TabIndex = 0;
+            this.rbLimitNoLimits.TabStop = true;
+            this.rbLimitNoLimits.Text = "No Limits";
+            this.rbLimitNoLimits.UseVisualStyleBackColor = true;
+            this.rbLimitNoLimits.CheckedChanged += new System.EventHandler(this.rbLimitNoLimits_CheckedChanged);
+            // 
+            // rbLimitDate
+            // 
+            this.rbLimitDate.AutoSize = true;
+            this.rbLimitDate.Location = new System.Drawing.Point(77, 3);
+            this.rbLimitDate.Name = "rbLimitDate";
+            this.rbLimitDate.Size = new System.Drawing.Size(88, 17);
+            this.rbLimitDate.TabIndex = 1;
+            this.rbLimitDate.Text = "Limit To Date";
+            this.rbLimitDate.UseVisualStyleBackColor = true;
+            this.rbLimitDate.CheckedChanged += new System.EventHandler(this.rbLimitDate_CheckedChanged);
+            // 
+            // rbLimitMonth
+            // 
+            this.rbLimitMonth.AutoSize = true;
+            this.rbLimitMonth.Location = new System.Drawing.Point(171, 3);
+            this.rbLimitMonth.Name = "rbLimitMonth";
+            this.rbLimitMonth.Size = new System.Drawing.Size(91, 17);
+            this.rbLimitMonth.TabIndex = 2;
+            this.rbLimitMonth.Text = "Limit to Month";
+            this.rbLimitMonth.UseVisualStyleBackColor = true;
+            this.rbLimitMonth.CheckedChanged += new System.EventHandler(this.rbLimitMonth_CheckedChanged);
+            // 
+            // rbLimitYear
+            // 
+            this.rbLimitYear.AutoSize = true;
+            this.rbLimitYear.Location = new System.Drawing.Point(268, 3);
+            this.rbLimitYear.Name = "rbLimitYear";
+            this.rbLimitYear.Size = new System.Drawing.Size(83, 17);
+            this.rbLimitYear.TabIndex = 3;
+            this.rbLimitYear.Text = "Limit to Year";
+            this.rbLimitYear.UseVisualStyleBackColor = true;
+            this.rbLimitYear.CheckedChanged += new System.EventHandler(this.rbLimitYear_CheckedChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(39, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(45, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Results:";
+            this.mainHelpTooltip.SetToolTip(this.label2, resources.GetString("label2.ToolTip"));
+            // 
+            // dtpLimitsDateValue
+            // 
+            this.dtpLimitsDateValue.CustomFormat = "dd MMMM yyyy";
+            this.dtpLimitsDateValue.DropDownAlign = System.Windows.Forms.LeftRightAlignment.Right;
+            this.dtpLimitsDateValue.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpLimitsDateValue.Location = new System.Drawing.Point(357, 3);
+            this.dtpLimitsDateValue.MaxDate = new System.DateTime(2100, 12, 31, 0, 0, 0, 0);
+            this.dtpLimitsDateValue.MinDate = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
+            this.dtpLimitsDateValue.Name = "dtpLimitsDateValue";
+            this.dtpLimitsDateValue.ShowUpDown = true;
+            this.dtpLimitsDateValue.Size = new System.Drawing.Size(139, 20);
+            this.dtpLimitsDateValue.TabIndex = 4;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(954, 938);
+            this.ClientSize = new System.Drawing.Size(716, 641);
             this.Controls.Add(this.splitMain);
             this.Controls.Add(this.statusStripMain);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
-            this.ShowIcon = false;
-            this.Text = "Rectify | for Google Picasa and other photo apps";
+            this.Text = "Rectify";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.statusStripMain.ResumeLayout(false);
             this.statusStripMain.PerformLayout();
             this.splitMain.Panel1.ResumeLayout(false);
@@ -505,6 +604,8 @@
             this.pnlActionChanges.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.flowLayoutLimitDate.ResumeLayout(false);
+            this.flowLayoutLimitDate.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -530,10 +631,10 @@
         private System.Windows.Forms.CheckBox cbSelectAllRows;
         private System.Windows.Forms.Button btnRectifySelected;
         private System.Windows.Forms.Label lblAnalysisResults;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuFile;
         private System.Windows.Forms.ToolStripMenuItem mItemExitApplication;
-        private System.Windows.Forms.ToolStripMenuItem mItemAbout;
-        private System.Windows.Forms.ToolStripMenuItem aboutRectifyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuHelp;
+        private System.Windows.Forms.ToolStripMenuItem mItemAboutRectify;
         private System.Windows.Forms.ToolStripSplitButton toolStripCancelBtn;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colSelected;
         private System.Windows.Forms.DataGridViewTextBoxColumn colFileName;
@@ -552,6 +653,14 @@
         private System.Windows.Forms.ToolStripMenuItem ctxMenuItemShowFileProperties;
         private System.Windows.Forms.ToolStripMenuItem ctxMenuItemShowDetails;
         private System.Windows.Forms.ToolStripMenuItem ctxMenuItemLocateFileOnDisk;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ToolTip mainHelpTooltip;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutLimitDate;
+        private System.Windows.Forms.RadioButton rbLimitNoLimits;
+        private System.Windows.Forms.RadioButton rbLimitDate;
+        private System.Windows.Forms.RadioButton rbLimitMonth;
+        private System.Windows.Forms.RadioButton rbLimitYear;
+        private System.Windows.Forms.DateTimePicker dtpLimitsDateValue;
     }
 }
 

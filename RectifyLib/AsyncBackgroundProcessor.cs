@@ -43,8 +43,8 @@ namespace RectifyLib
     /// <typeparam name="TResult">The return type of the background call</typeparam>
     /// <typeparam name="TProgressEventArgs">Type of progress events that are used when <see cref="BackgroundProgress"/> 
     /// is raised during execution</typeparam>
-    /// <typeparam name="TProcessArgs">The arguments sent to the background process logic</typeparam>
-    public abstract class AsyncBackgroundProcessor<TResult, TProgressEventArgs, TProcessArgs> where TProgressEventArgs : BackgroundProgressArgs
+    /// <typeparam name="TStartupArgs">The arguments sent to the background process logic when it is started</typeparam>
+    public abstract class AsyncBackgroundProcessor<TResult, TProgressEventArgs, TStartupArgs> where TProgressEventArgs : BackgroundProgressArgs
     {
         private CancellationTokenSource _cancelSource = null;
 
@@ -67,7 +67,7 @@ namespace RectifyLib
         /// Runs an the process asynchronously for the given <see cref="args"/> arguments.
         /// </summary>
         /// <param name="args">The arguments to the background process</param>
-        public Task<TResult> RunAsync(TProcessArgs args)
+        public Task<TResult> RunAsync(TStartupArgs args)
         {
             // Create a new cancellation source for the task
             _cancelSource?.Dispose();
@@ -94,6 +94,6 @@ namespace RectifyLib
         /// Call <see cref="OnBackgroundProgress"/> within this method body to report progress to subscribers.
         /// </summary>
         /// <returns></returns>
-        protected abstract Func<TResult> CreateAsyncProcess(TProcessArgs args, CancellationToken cancellationToken);
+        protected abstract Func<TResult> CreateAsyncProcess(TStartupArgs args, CancellationToken cancellationToken);
     }
 }

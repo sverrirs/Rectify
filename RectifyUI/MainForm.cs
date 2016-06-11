@@ -25,6 +25,34 @@ namespace RectifyUI
         private readonly Corrector _corrector = new Corrector();
 
         private readonly TaskScheduler _uiScheduler;
+        private DateLimits _dateLimit;
+        private CancellationToken _currentCancelToken = CancellationToken.None;
+
+        public DateLimits DateLimit
+        {
+            get { return _dateLimit; }
+            set
+            {
+                _dateLimit = value;
+                dtpLimitsDateValue.Visible = _dateLimit != DateLimits.NoLimit;
+
+                switch (_dateLimit)
+                {
+                    case DateLimits.ExactDate:
+                        dtpLimitsDateValue.CustomFormat = "dd MMMM yyyy";
+                        dtpLimitsDateValue.ShowUpDown = false;
+                        break;
+                    case DateLimits.MonthAndYear:
+                        dtpLimitsDateValue.CustomFormat = "MMMM yyyy";
+                        dtpLimitsDateValue.ShowUpDown = true;
+                        break;
+                    case DateLimits.Year:
+                        dtpLimitsDateValue.CustomFormat = "yyyy";
+                        dtpLimitsDateValue.ShowUpDown = true;
+                        break;
+                }
+            }
+        }
 
         /*
          TODO:
@@ -35,18 +63,18 @@ namespace RectifyUI
             - Show rationale for date selection and detection in column
             - Allow inclusion/exclusion of columns in grid and save its state
             - Consider master-detail grid (source folder or destination folder tree)
-            - Report process and don't lock up while program is scanning folders
-            - Show x of n folders scanned next to progress bar
+            X Report process and don't lock up while program is scanning folders
+            X Show x of n folders scanned next to progress bar
             - Exclusion of certain file endings (zip, thm etc)
             - Exclusion of certain folders
             - Allow filtering of grid
                 - Show only conflicts in source folder *e.g. files that need to be renamed
                 - Show possible duplicates (in source folder)
-            - Show total file count found that need rectification
+            X Show total file count found that need rectification
             - Make analyse and rectify buttons bigger and colored
-            - Program Icon!
+            X Program Icon!
             - Create a reverse file, meaning log all the actions taken, source to destination copy so that the action can be undoed
-            - Validate date check for snapchat and photogrid pictures and pictures which name cannot be used to detect date
+            X Validate date check for snapchat and photogrid pictures and pictures which name cannot be used to detect date
             - Extend the filename date extraction to handle more prefixes
                 - 2008-10-05\060920081906.jpg
                 - 
@@ -65,6 +93,11 @@ namespace RectifyUI
             - Double click file entry to open file in default system viewer
             X Right click menu item to open file properties window for selected file(s) http://stackoverflow.com/a/1281485/779521
             - Confirm close if user has un-rectified files in the view when closing
+            X Limit rectification to a particular date range. Meaning that I am only interested in finding pictures that should belong to May 2016 that may have been misplaced.
+            X About window with link to page
+            X When exiting application any currently running background process should be terminated.
+            X Version numbering
+            X Display version numbering in taskbar and about window
              */
 
         public MainForm()
@@ -85,7 +118,16 @@ namespace RectifyUI
             // We want to report on the background progress of the background workers
             _analyser.BackgroundProgress += _analyser_AnalysisProgress;
             _corrector.BackgroundProgress += _corrector_BackgroundProgress;
+        }
 
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            // Append the version number to the form title
+            var version = typeof(MainForm).Assembly.GetName().Version;
+            if (version != null)
+                this.Text += $" | v{version}";
+
+            DateLimit = DateLimits.NoLimit;
         }
 
         private void UpdateProgress(int totalSteps, int currentStep)
@@ -126,42 +168,44 @@ namespace RectifyUI
             // Disable all the interactable UI
             splitMain.Enabled = false;
 
-            _analyser.RunAsync(dirpath)
-                .ContinueWith(
-                    task =>
+            lblAnalysisResults.Text = "Pre-Analysis in progress, please wait";
+
+            _analyser.RunAsync(new AnalyserStartupArgs(dirpath, DateLimit, dtpLimitsDateValue.Value)).ContinueWith(task =>
+            {
+                try
+                {
+                    lblAnalysisResults.Text = "Failure!";
+
+                    if (task.IsCanceled)
                     {
-                        try
-                        {
-                            if (task.IsCanceled)
-                            {
-                                toolStripStatuslbl.Text = "Cancelled";
-                            }
-                            else if (task.IsFaulted)
-                            {
-                                toolStripStatuslbl.Text = "Error";
-                            }
-                            else if (task.IsCompleted)
-                            {
-                                toolStripStatuslbl.Text = "Completed";
-                                PopulateGrid(task.Result);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // TODO: show errors, how?
-                        }
-                        finally
-                        {
-                            HideProgressAndEnableUI();
-                        }
-                    },
-                    scheduler: _uiScheduler,
-                    continuationOptions: TaskContinuationOptions.AttachedToParent,
-                    cancellationToken: CancellationToken.None);
+                        toolStripStatuslbl.Text = "Analysing Cancelled";
+                    }
+                    else if (task.IsFaulted)
+                    {
+                        toolStripStatuslbl.Text = "Analysing Error";
+                    }
+                    else if (task.IsCompleted)
+                    {
+                        toolStripStatuslbl.Text = "Analysing Completed";
+                        PopulateGrid(task.Result);
+                        lblAnalysisResults.Text = $"Analysis Complete: {dataGridMain.Rows.Count} potential errors found";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // TODO: show errors, how?
+                }
+                finally
+                {
+                    HideProgressAndEnableUI();
+                }
+            }, scheduler: _uiScheduler, continuationOptions: TaskContinuationOptions.AttachedToParent, cancellationToken: CancellationToken.None);
         }
 
         private void _analyser_AnalysisProgress(object sender, AnalyserProgressArgs e)
         {
+            lblAnalysisResults.Text = "Analysis in progress";
+
             UpdateProgress(e.TotalSteps, e.CurrentStep);
 
             toolStripProgresslbl.Visible = true;
@@ -169,7 +213,13 @@ namespace RectifyUI
             toolStripCancelBtn.Visible = true;
 
             // Update the progress message
-            toolStripStatuslbl.Text = $"{e.DirectoryName} > {Path.GetFileName(e.FilePath)}";
+            if( e.RemainingTime.TotalMinutes < 1 )
+                toolStripStatuslbl.Text = $"Remaining: {e.RemainingTime.TotalSeconds:#,##0} seconds";
+            else
+                toolStripStatuslbl.Text = $"Remaining: {e.RemainingTime.TotalMinutes:#,##0} minutes";
+
+            toolStripStatuslbl.Text += $" | File {e.CurrentStep:#,##0} out of {e.TotalSteps:#,##0}";
+            toolStripStatuslbl.Text += $" | {e.DirectoryName} > {Path.GetFileName(e.FilePath)}";
         }
 
         #region Grid Updating and Interaction Handling
@@ -233,18 +283,18 @@ namespace RectifyUI
         private void toolStripCancelBtn_ButtonClick(object sender, EventArgs e)
         {
             _analyser.CancelAsync();
-        } 
+        }
 
-         private void dataGridMain_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        private void dataGridMain_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
             // End of edition on each click on column of checkbox
-             if (e.ColumnIndex == colSelected.Index && e.RowIndex != -1)
-                 ToggleCheckedForRow(e.RowIndex);
+            if (e.ColumnIndex == colSelected.Index && e.RowIndex != -1)
+                ToggleCheckedForRow(e.RowIndex);
         }
 
         private void ToggleCheckedForRow(int rowIndex, bool? isChecked = null)
         {
-            ToggleCheckedForRow(new[] { rowIndex }, isChecked);
+            ToggleCheckedForRow(new[] {rowIndex}, isChecked);
         }
 
         private void ToggleCheckedForRow(int[] rowIndexes, bool? isChecked = null)
@@ -258,10 +308,10 @@ namespace RectifyUI
                 DataGridViewCell cell = this.dataGridMain.Rows[rowIndex].Cells[colSelected.Index];
 
                 // If the checked parameter is set then assign that value, otherwise toggle the checkmark
-                if( isChecked.HasValue )
+                if (isChecked.HasValue)
                     cell.Value = isChecked;
                 else
-                    cell.Value = cell.Value == null ? true : !(bool)cell.Value;
+                    cell.Value = cell.Value == null ? true : !(bool) cell.Value;
             }
 
             UpdateCheckAllValueBasedOnCheckedStatesInMainGrid();
@@ -302,7 +352,6 @@ namespace RectifyUI
             {
                 this.dataGridMain.ResumeDrawing(true);
             }
-
         }
 
         #endregion
@@ -317,8 +366,7 @@ namespace RectifyUI
             }
 
             // Collect the selected results from the grid
-            var selectedFiles = GetCheckedRowsInGrid().Select(row => row.Tag as FileAnalysis)
-                .ToArray();
+            var selectedFiles = GetCheckedRowsInGrid().Select(row => row.Tag as FileAnalysis).ToArray();
 
             RunCorrector(selectedFiles);
         }
@@ -330,12 +378,11 @@ namespace RectifyUI
         /// </summary>
         private IEnumerable<DataGridViewRow> GetCheckedRowsInGrid()
         {
-            return this.dataGridMain.Rows.OfType<DataGridViewRow>()
-                .Where(row =>
-                {
-                    var value = row.Cells[colSelected.Index].Value;
-                    return value != null && (bool) value;
-                });
+            return this.dataGridMain.Rows.OfType<DataGridViewRow>().Where(row =>
+            {
+                var value = row.Cells[colSelected.Index].Value;
+                return value != null && (bool) value;
+            });
         }
 
         /// <summary>
@@ -356,38 +403,33 @@ namespace RectifyUI
             // Disable all the interactable UI
             splitMain.Enabled = false;
 
-            _corrector.RunAsync(selectedFiles)
-                .ContinueWith(
-                    task =>
+            _corrector.RunAsync(selectedFiles).ContinueWith(task =>
+            {
+                try
+                {
+                    if (task.IsCanceled)
                     {
-                        try
-                        {
-                            if (task.IsCanceled)
-                            {
-                                toolStripStatuslbl.Text = "Cancelled";
-                            }
-                            else if (task.IsFaulted)
-                            {
-                                toolStripStatuslbl.Text = "Error";
-                            }
-                            else if (task.IsCompleted)
-                            {
-                                toolStripStatuslbl.Text = "Completed";
-                                ResetMainGrid();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // TODO: show errors, how?
-                        }
-                        finally
-                        {
-                            HideProgressAndEnableUI();
-                        }
-                    },
-                    scheduler: _uiScheduler,
-                    continuationOptions: TaskContinuationOptions.AttachedToParent,
-                    cancellationToken: CancellationToken.None);
+                        toolStripStatuslbl.Text = "Correction Cancelled";
+                    }
+                    else if (task.IsFaulted)
+                    {
+                        toolStripStatuslbl.Text = "Correction Error";
+                    }
+                    else if (task.IsCompleted)
+                    {
+                        toolStripStatuslbl.Text = "Correction Completed";
+                        ResetMainGrid();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // TODO: show errors, how?
+                }
+                finally
+                {
+                    HideProgressAndEnableUI();
+                }
+            }, scheduler: _uiScheduler, continuationOptions: TaskContinuationOptions.AttachedToParent, cancellationToken: CancellationToken.None);
         }
 
         private void _corrector_BackgroundProgress(object sender, CorrectorProgressArgs e)
@@ -409,7 +451,7 @@ namespace RectifyUI
                 HandleGridRightClick(e);
             }
         }
-        
+
 
         private void HandleGridRightClick(MouseEventArgs mouseEvent)
         {
@@ -456,12 +498,60 @@ namespace RectifyUI
 
         private void ctxMenuItemCheckSelected_Click(object sender, EventArgs e)
         {
-            ToggleCheckedForRow(GetSelectedRowsInGrid().Select(x=> x.Index).ToArray(), true);
+            ToggleCheckedForRow(GetSelectedRowsInGrid().Select(x => x.Index).ToArray(), true);
         }
 
         private void ctxMenuItemUncheckSelected_Click(object sender, EventArgs e)
         {
             ToggleCheckedForRow(GetSelectedRowsInGrid().Select(x => x.Index).ToArray(), false);
+        }
+
+        private void rbLimitNoLimits_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbLimitNoLimits.Checked)
+                DateLimit = DateLimits.NoLimit;
+        }
+
+        private void rbLimitDate_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbLimitDate.Checked)
+                DateLimit = DateLimits.ExactDate;
+        }
+
+        private void rbLimitMonth_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbLimitMonth.Checked)
+                DateLimit = DateLimits.MonthAndYear;
+        }
+
+        private void rbLimitYear_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbLimitYear.Checked)
+                DateLimit = DateLimits.Year;
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _analyser?.CancelAsync();
+            _corrector?.CancelAsync();
+        }
+
+        private void mItemAboutRectify_Click(object sender, EventArgs e)
+        {
+            using (AboutForm about = new AboutForm())
+            {
+                about.ShowDialog(this);
+            }
+        }
+
+        private void mItemExitApplication_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
