@@ -1,3 +1,7 @@
+<link href='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' rel='image_src'/>
+<meta content='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' property='og:image'/>
+<meta content='https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png' name='twitter:image:src'/>
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb.png" alt="Rectify logo" />
 </p>
