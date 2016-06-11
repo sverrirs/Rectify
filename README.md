@@ -1,9 +1,5 @@
 <p align="center">
-
-  ![logo](https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png)
-  
-  <!--img src="https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png" alt="Rectify logo"  property="og:image" width="256"/-->
-  
+  <img src="https://raw.githubusercontent.com/sverrirs/Rectify/master/RectifyUI/images/light-bulb-512.png" alt="Rectify logo"  property="og:image" rel='image_src' name='twitter:image:src' width="256"/>
 </p>
 
 # Rectify
