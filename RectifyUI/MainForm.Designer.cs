@@ -36,6 +36,13 @@
             this.toolStripProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripCancelBtn = new System.Windows.Forms.ToolStripSplitButton();
             this.splitMain = new System.Windows.Forms.SplitContainer();
+            this.label2 = new System.Windows.Forms.Label();
+            this.flowLayoutLimitDate = new System.Windows.Forms.FlowLayoutPanel();
+            this.rbLimitNoLimits = new System.Windows.Forms.RadioButton();
+            this.rbLimitDate = new System.Windows.Forms.RadioButton();
+            this.rbLimitMonth = new System.Windows.Forms.RadioButton();
+            this.rbLimitYear = new System.Windows.Forms.RadioButton();
+            this.dtpLimitsDateValue = new System.Windows.Forms.DateTimePicker();
             this.btnAnalyseLibrary = new System.Windows.Forms.Button();
             this.pnlAdvanced = new System.Windows.Forms.Panel();
             this.cbAdvanced = new System.Windows.Forms.CheckBox();
@@ -70,25 +77,18 @@
             this.menuHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mItemAboutRectify = new System.Windows.Forms.ToolStripMenuItem();
             this.imageListFileTypes = new System.Windows.Forms.ImageList(this.components);
-            this.flowLayoutLimitDate = new System.Windows.Forms.FlowLayoutPanel();
-            this.rbLimitNoLimits = new System.Windows.Forms.RadioButton();
-            this.rbLimitDate = new System.Windows.Forms.RadioButton();
-            this.rbLimitMonth = new System.Windows.Forms.RadioButton();
-            this.rbLimitYear = new System.Windows.Forms.RadioButton();
-            this.label2 = new System.Windows.Forms.Label();
             this.mainHelpTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.dtpLimitsDateValue = new System.Windows.Forms.DateTimePicker();
             this.statusStripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.Panel2.SuspendLayout();
             this.splitMain.SuspendLayout();
+            this.flowLayoutLimitDate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridMain)).BeginInit();
             this.ctxMenuGrid.SuspendLayout();
             this.pnlAnalysisResults.SuspendLayout();
             this.pnlActionChanges.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            this.flowLayoutLimitDate.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStripMain
@@ -98,9 +98,9 @@
             this.toolStripProgresslbl,
             this.toolStripProgress,
             this.toolStripCancelBtn});
-            this.statusStripMain.Location = new System.Drawing.Point(0, 619);
+            this.statusStripMain.Location = new System.Drawing.Point(0, 618);
             this.statusStripMain.Name = "statusStripMain";
-            this.statusStripMain.Size = new System.Drawing.Size(716, 22);
+            this.statusStripMain.Size = new System.Drawing.Size(785, 22);
             this.statusStripMain.TabIndex = 0;
             this.statusStripMain.Text = "statusStrip1";
             // 
@@ -108,7 +108,7 @@
             // 
             this.toolStripStatuslbl.AutoSize = false;
             this.toolStripStatuslbl.Name = "toolStripStatuslbl";
-            this.toolStripStatuslbl.Size = new System.Drawing.Size(283, 17);
+            this.toolStripStatuslbl.Size = new System.Drawing.Size(352, 17);
             this.toolStripStatuslbl.Spring = true;
             this.toolStripStatuslbl.Text = "Ready";
             this.toolStripStatuslbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -163,14 +163,97 @@
             this.splitMain.Panel2.Controls.Add(this.dataGridMain);
             this.splitMain.Panel2.Controls.Add(this.pnlAnalysisResults);
             this.splitMain.Panel2.Controls.Add(this.pnlActionChanges);
-            this.splitMain.Size = new System.Drawing.Size(716, 595);
+            this.splitMain.Size = new System.Drawing.Size(785, 594);
             this.splitMain.SplitterDistance = 73;
             this.splitMain.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(39, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(45, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Results:";
+            this.mainHelpTooltip.SetToolTip(this.label2, resources.GetString("label2.ToolTip"));
+            // 
+            // flowLayoutLimitDate
+            // 
+            this.flowLayoutLimitDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutLimitDate.Controls.Add(this.rbLimitNoLimits);
+            this.flowLayoutLimitDate.Controls.Add(this.rbLimitDate);
+            this.flowLayoutLimitDate.Controls.Add(this.rbLimitMonth);
+            this.flowLayoutLimitDate.Controls.Add(this.rbLimitYear);
+            this.flowLayoutLimitDate.Controls.Add(this.dtpLimitsDateValue);
+            this.flowLayoutLimitDate.Location = new System.Drawing.Point(95, 40);
+            this.flowLayoutLimitDate.Name = "flowLayoutLimitDate";
+            this.flowLayoutLimitDate.Size = new System.Drawing.Size(597, 23);
+            this.flowLayoutLimitDate.TabIndex = 6;
+            // 
+            // rbLimitNoLimits
+            // 
+            this.rbLimitNoLimits.AutoSize = true;
+            this.rbLimitNoLimits.Checked = true;
+            this.rbLimitNoLimits.Location = new System.Drawing.Point(3, 3);
+            this.rbLimitNoLimits.Name = "rbLimitNoLimits";
+            this.rbLimitNoLimits.Size = new System.Drawing.Size(68, 17);
+            this.rbLimitNoLimits.TabIndex = 0;
+            this.rbLimitNoLimits.TabStop = true;
+            this.rbLimitNoLimits.Text = "No Limits";
+            this.rbLimitNoLimits.UseVisualStyleBackColor = true;
+            this.rbLimitNoLimits.CheckedChanged += new System.EventHandler(this.rbLimitNoLimits_CheckedChanged);
+            // 
+            // rbLimitDate
+            // 
+            this.rbLimitDate.AutoSize = true;
+            this.rbLimitDate.Location = new System.Drawing.Point(77, 3);
+            this.rbLimitDate.Name = "rbLimitDate";
+            this.rbLimitDate.Size = new System.Drawing.Size(88, 17);
+            this.rbLimitDate.TabIndex = 1;
+            this.rbLimitDate.Text = "Limit To Date";
+            this.rbLimitDate.UseVisualStyleBackColor = true;
+            this.rbLimitDate.CheckedChanged += new System.EventHandler(this.rbLimitDate_CheckedChanged);
+            // 
+            // rbLimitMonth
+            // 
+            this.rbLimitMonth.AutoSize = true;
+            this.rbLimitMonth.Location = new System.Drawing.Point(171, 3);
+            this.rbLimitMonth.Name = "rbLimitMonth";
+            this.rbLimitMonth.Size = new System.Drawing.Size(91, 17);
+            this.rbLimitMonth.TabIndex = 2;
+            this.rbLimitMonth.Text = "Limit to Month";
+            this.rbLimitMonth.UseVisualStyleBackColor = true;
+            this.rbLimitMonth.CheckedChanged += new System.EventHandler(this.rbLimitMonth_CheckedChanged);
+            // 
+            // rbLimitYear
+            // 
+            this.rbLimitYear.AutoSize = true;
+            this.rbLimitYear.Location = new System.Drawing.Point(268, 3);
+            this.rbLimitYear.Name = "rbLimitYear";
+            this.rbLimitYear.Size = new System.Drawing.Size(83, 17);
+            this.rbLimitYear.TabIndex = 3;
+            this.rbLimitYear.Text = "Limit to Year";
+            this.rbLimitYear.UseVisualStyleBackColor = true;
+            this.rbLimitYear.CheckedChanged += new System.EventHandler(this.rbLimitYear_CheckedChanged);
+            // 
+            // dtpLimitsDateValue
+            // 
+            this.dtpLimitsDateValue.CustomFormat = "dd MMMM yyyy";
+            this.dtpLimitsDateValue.DropDownAlign = System.Windows.Forms.LeftRightAlignment.Right;
+            this.dtpLimitsDateValue.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpLimitsDateValue.Location = new System.Drawing.Point(357, 3);
+            this.dtpLimitsDateValue.MaxDate = new System.DateTime(2100, 12, 31, 0, 0, 0, 0);
+            this.dtpLimitsDateValue.MinDate = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
+            this.dtpLimitsDateValue.Name = "dtpLimitsDateValue";
+            this.dtpLimitsDateValue.ShowUpDown = true;
+            this.dtpLimitsDateValue.Size = new System.Drawing.Size(139, 20);
+            this.dtpLimitsDateValue.TabIndex = 4;
             // 
             // btnAnalyseLibrary
             // 
             this.btnAnalyseLibrary.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAnalyseLibrary.Location = new System.Drawing.Point(629, 40);
+            this.btnAnalyseLibrary.Location = new System.Drawing.Point(698, 40);
             this.btnAnalyseLibrary.Name = "btnAnalyseLibrary";
             this.btnAnalyseLibrary.Size = new System.Drawing.Size(75, 23);
             this.btnAnalyseLibrary.TabIndex = 5;
@@ -184,7 +267,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlAdvanced.Location = new System.Drawing.Point(95, 172);
             this.pnlAdvanced.Name = "pnlAdvanced";
-            this.pnlAdvanced.Size = new System.Drawing.Size(609, 151);
+            this.pnlAdvanced.Size = new System.Drawing.Size(678, 151);
             this.pnlAdvanced.TabIndex = 4;
             // 
             // cbAdvanced
@@ -200,7 +283,7 @@
             // btnBrowsePicasaLibrary
             // 
             this.btnBrowsePicasaLibrary.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowsePicasaLibrary.Location = new System.Drawing.Point(670, 12);
+            this.btnBrowsePicasaLibrary.Location = new System.Drawing.Point(739, 12);
             this.btnBrowsePicasaLibrary.Name = "btnBrowsePicasaLibrary";
             this.btnBrowsePicasaLibrary.Size = new System.Drawing.Size(34, 23);
             this.btnBrowsePicasaLibrary.TabIndex = 2;
@@ -213,7 +296,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbPicasaLibraryPath.Location = new System.Drawing.Point(95, 14);
             this.tbPicasaLibraryPath.Name = "tbPicasaLibraryPath";
-            this.tbPicasaLibraryPath.Size = new System.Drawing.Size(569, 20);
+            this.tbPicasaLibraryPath.Size = new System.Drawing.Size(638, 20);
             this.tbPicasaLibraryPath.TabIndex = 1;
             this.tbPicasaLibraryPath.Text = "H:\\photos\\";
             // 
@@ -249,7 +332,7 @@
             this.dataGridMain.Name = "dataGridMain";
             this.dataGridMain.RowHeadersVisible = false;
             this.dataGridMain.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridMain.Size = new System.Drawing.Size(716, 457);
+            this.dataGridMain.Size = new System.Drawing.Size(785, 456);
             this.dataGridMain.TabIndex = 3;
             this.dataGridMain.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridMain_CellMouseDown);
             this.dataGridMain.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridMain_CellMouseUp);
@@ -398,7 +481,7 @@
             this.pnlAnalysisResults.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlAnalysisResults.Location = new System.Drawing.Point(0, 0);
             this.pnlAnalysisResults.Name = "pnlAnalysisResults";
-            this.pnlAnalysisResults.Size = new System.Drawing.Size(716, 23);
+            this.pnlAnalysisResults.Size = new System.Drawing.Size(785, 23);
             this.pnlAnalysisResults.TabIndex = 2;
             // 
             // lblAnalysisResults
@@ -407,7 +490,7 @@
             this.lblAnalysisResults.Location = new System.Drawing.Point(0, 0);
             this.lblAnalysisResults.Name = "lblAnalysisResults";
             this.lblAnalysisResults.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this.lblAnalysisResults.Size = new System.Drawing.Size(716, 23);
+            this.lblAnalysisResults.Size = new System.Drawing.Size(785, 23);
             this.lblAnalysisResults.TabIndex = 0;
             this.lblAnalysisResults.Text = "label2";
             // 
@@ -416,9 +499,9 @@
             this.pnlActionChanges.Controls.Add(this.cbSelectAllRows);
             this.pnlActionChanges.Controls.Add(this.btnRectifySelected);
             this.pnlActionChanges.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlActionChanges.Location = new System.Drawing.Point(0, 480);
+            this.pnlActionChanges.Location = new System.Drawing.Point(0, 479);
             this.pnlActionChanges.Name = "pnlActionChanges";
-            this.pnlActionChanges.Size = new System.Drawing.Size(716, 38);
+            this.pnlActionChanges.Size = new System.Drawing.Size(785, 38);
             this.pnlActionChanges.TabIndex = 1;
             // 
             // cbSelectAllRows
@@ -436,7 +519,7 @@
             // btnRectifySelected
             // 
             this.btnRectifySelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRectifySelected.Location = new System.Drawing.Point(589, 6);
+            this.btnRectifySelected.Location = new System.Drawing.Point(658, 6);
             this.btnRectifySelected.Name = "btnRectifySelected";
             this.btnRectifySelected.Size = new System.Drawing.Size(115, 23);
             this.btnRectifySelected.TabIndex = 1;
@@ -451,7 +534,7 @@
             this.menuHelp});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(716, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(785, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -466,7 +549,7 @@
             // mItemExitApplication
             // 
             this.mItemExitApplication.Name = "mItemExitApplication";
-            this.mItemExitApplication.Size = new System.Drawing.Size(152, 22);
+            this.mItemExitApplication.Size = new System.Drawing.Size(92, 22);
             this.mItemExitApplication.Text = "&Exit";
             this.mItemExitApplication.Click += new System.EventHandler(this.mItemExitApplication_Click);
             // 
@@ -481,7 +564,7 @@
             // mItemAboutRectify
             // 
             this.mItemAboutRectify.Name = "mItemAboutRectify";
-            this.mItemAboutRectify.Size = new System.Drawing.Size(152, 22);
+            this.mItemAboutRectify.Size = new System.Drawing.Size(146, 22);
             this.mItemAboutRectify.Text = "&About Rectify";
             this.mItemAboutRectify.Click += new System.EventHandler(this.mItemAboutRectify_Click);
             // 
@@ -492,94 +575,11 @@
             this.imageListFileTypes.Images.SetKeyName(0, "photo");
             this.imageListFileTypes.Images.SetKeyName(1, "video");
             // 
-            // flowLayoutLimitDate
-            // 
-            this.flowLayoutLimitDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.flowLayoutLimitDate.Controls.Add(this.rbLimitNoLimits);
-            this.flowLayoutLimitDate.Controls.Add(this.rbLimitDate);
-            this.flowLayoutLimitDate.Controls.Add(this.rbLimitMonth);
-            this.flowLayoutLimitDate.Controls.Add(this.rbLimitYear);
-            this.flowLayoutLimitDate.Controls.Add(this.dtpLimitsDateValue);
-            this.flowLayoutLimitDate.Location = new System.Drawing.Point(95, 40);
-            this.flowLayoutLimitDate.Name = "flowLayoutLimitDate";
-            this.flowLayoutLimitDate.Size = new System.Drawing.Size(528, 23);
-            this.flowLayoutLimitDate.TabIndex = 6;
-            // 
-            // rbLimitNoLimits
-            // 
-            this.rbLimitNoLimits.AutoSize = true;
-            this.rbLimitNoLimits.Checked = true;
-            this.rbLimitNoLimits.Location = new System.Drawing.Point(3, 3);
-            this.rbLimitNoLimits.Name = "rbLimitNoLimits";
-            this.rbLimitNoLimits.Size = new System.Drawing.Size(68, 17);
-            this.rbLimitNoLimits.TabIndex = 0;
-            this.rbLimitNoLimits.TabStop = true;
-            this.rbLimitNoLimits.Text = "No Limits";
-            this.rbLimitNoLimits.UseVisualStyleBackColor = true;
-            this.rbLimitNoLimits.CheckedChanged += new System.EventHandler(this.rbLimitNoLimits_CheckedChanged);
-            // 
-            // rbLimitDate
-            // 
-            this.rbLimitDate.AutoSize = true;
-            this.rbLimitDate.Location = new System.Drawing.Point(77, 3);
-            this.rbLimitDate.Name = "rbLimitDate";
-            this.rbLimitDate.Size = new System.Drawing.Size(88, 17);
-            this.rbLimitDate.TabIndex = 1;
-            this.rbLimitDate.Text = "Limit To Date";
-            this.rbLimitDate.UseVisualStyleBackColor = true;
-            this.rbLimitDate.CheckedChanged += new System.EventHandler(this.rbLimitDate_CheckedChanged);
-            // 
-            // rbLimitMonth
-            // 
-            this.rbLimitMonth.AutoSize = true;
-            this.rbLimitMonth.Location = new System.Drawing.Point(171, 3);
-            this.rbLimitMonth.Name = "rbLimitMonth";
-            this.rbLimitMonth.Size = new System.Drawing.Size(91, 17);
-            this.rbLimitMonth.TabIndex = 2;
-            this.rbLimitMonth.Text = "Limit to Month";
-            this.rbLimitMonth.UseVisualStyleBackColor = true;
-            this.rbLimitMonth.CheckedChanged += new System.EventHandler(this.rbLimitMonth_CheckedChanged);
-            // 
-            // rbLimitYear
-            // 
-            this.rbLimitYear.AutoSize = true;
-            this.rbLimitYear.Location = new System.Drawing.Point(268, 3);
-            this.rbLimitYear.Name = "rbLimitYear";
-            this.rbLimitYear.Size = new System.Drawing.Size(83, 17);
-            this.rbLimitYear.TabIndex = 3;
-            this.rbLimitYear.Text = "Limit to Year";
-            this.rbLimitYear.UseVisualStyleBackColor = true;
-            this.rbLimitYear.CheckedChanged += new System.EventHandler(this.rbLimitYear_CheckedChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(39, 45);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Results:";
-            this.mainHelpTooltip.SetToolTip(this.label2, resources.GetString("label2.ToolTip"));
-            // 
-            // dtpLimitsDateValue
-            // 
-            this.dtpLimitsDateValue.CustomFormat = "dd MMMM yyyy";
-            this.dtpLimitsDateValue.DropDownAlign = System.Windows.Forms.LeftRightAlignment.Right;
-            this.dtpLimitsDateValue.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpLimitsDateValue.Location = new System.Drawing.Point(357, 3);
-            this.dtpLimitsDateValue.MaxDate = new System.DateTime(2100, 12, 31, 0, 0, 0, 0);
-            this.dtpLimitsDateValue.MinDate = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
-            this.dtpLimitsDateValue.Name = "dtpLimitsDateValue";
-            this.dtpLimitsDateValue.ShowUpDown = true;
-            this.dtpLimitsDateValue.Size = new System.Drawing.Size(139, 20);
-            this.dtpLimitsDateValue.TabIndex = 4;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(716, 641);
+            this.ClientSize = new System.Drawing.Size(785, 640);
             this.Controls.Add(this.splitMain);
             this.Controls.Add(this.statusStripMain);
             this.Controls.Add(this.menuStrip1);
@@ -597,6 +597,8 @@
             this.splitMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).EndInit();
             this.splitMain.ResumeLayout(false);
+            this.flowLayoutLimitDate.ResumeLayout(false);
+            this.flowLayoutLimitDate.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridMain)).EndInit();
             this.ctxMenuGrid.ResumeLayout(false);
             this.pnlAnalysisResults.ResumeLayout(false);
@@ -604,8 +606,6 @@
             this.pnlActionChanges.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.flowLayoutLimitDate.ResumeLayout(false);
-            this.flowLayoutLimitDate.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -20,6 +20,8 @@ namespace RectifyUI
     public partial class MainForm : Form
     {
         private static log4net.ILog Log = log4net.LogManager.GetLogger(typeof(MainForm));
+        
+        private readonly ProgressDialog _progressDialog;
 
         private readonly Analyser _analyser = new Analyser();
         private readonly Corrector _corrector = new Corrector();
@@ -107,6 +109,10 @@ namespace RectifyUI
             if (this.DesignMode)
                 return;
 
+            // Create the progress dialog and attach it to the form's disposal container for auto-cleanup
+            _progressDialog = new ProgressDialog();
+            _progressDialog.Cancelled += _progressDialog_Cancelled; ;
+
             // Hide all controls we need in the beginning
             toolStripProgress.Visible = false;
             toolStripProgresslbl.Visible = false;
@@ -130,6 +136,13 @@ namespace RectifyUI
             DateLimit = DateLimits.NoLimit;
         }
 
+        private void _progressDialog_Cancelled(object sender, EventArgs e)
+        {
+            // Just cancel either or both doesn't matter which
+            _analyser?.CancelAsync();
+            _corrector?.CancelAsync();
+        }
+
         private void UpdateProgress(int totalSteps, int currentStep)
         {
             if (totalSteps <= 0)
@@ -144,6 +157,52 @@ namespace RectifyUI
             toolStripProgress.Value = currentStep;
         }
 
+        private void ShowProgressAndDisableUI(string operationTitle, string initialMessage)
+        {
+            // Show the progress indicators
+            toolStripProgress.Visible = true;
+            toolStripProgresslbl.Visible = true;
+            toolStripCancelBtn.Visible = true;
+
+            // Disable the UI 
+            splitMain.Enabled = false;
+
+            lblAnalysisResults.Text = initialMessage;
+
+            if (_progressDialog.State == ProgressDialogState.Stopped)
+            {
+                _progressDialog.Title = operationTitle;
+                _progressDialog.CancelButton = true;
+                //_progressDialog.Modal = true;
+                _progressDialog.ShowTimeRemaining = false;
+                _progressDialog.Show(this);
+
+                _progressDialog.Line1 = initialMessage;
+                _progressDialog.Line2 = "Starting...";
+                //_progressDialog.CompactPaths = true;
+            }
+        }
+
+        private void ShowProgressDialogMessage(string title = null, string line1 = null, string line2 = null, string line3 = null, int currentStep = -1, int totalSteps = -1)
+        {
+            if (_progressDialog.State != ProgressDialogState.Stopped)
+            {
+                if( title != null )
+                    _progressDialog.Title = title;
+                if( line1 != null )
+                    _progressDialog.Line1 = line1;
+                if (line2 != null)
+                    _progressDialog.Line2 = line2;
+                if (!_progressDialog.ShowTimeRemaining && line3 != null)
+                    _progressDialog.Line3 = line3;
+
+                if (totalSteps != -1)
+                    _progressDialog.Maximum = totalSteps;
+                if (currentStep != -1)
+                    _progressDialog.Value = currentStep;
+            }
+        }
+
         private void HideProgressAndEnableUI()
         {
             // Hide the progress indicators
@@ -153,6 +212,11 @@ namespace RectifyUI
 
             // Enable the UI again
             splitMain.Enabled = true;
+
+            lblAnalysisResults.Text = "";
+
+            if (_progressDialog.State != ProgressDialogState.Stopped)
+                _progressDialog.Close();
         }
 
         private void btnAnalyseLibrary_Click(object sender, EventArgs e)
@@ -166,9 +230,7 @@ namespace RectifyUI
             }
 
             // Disable all the interactable UI
-            splitMain.Enabled = false;
-
-            lblAnalysisResults.Text = "Pre-Analysis in progress, please wait";
+            ShowProgressAndDisableUI("Analysing Library", "Pre-Analysis in progress, please wait");
 
             _analyser.RunAsync(new AnalyserStartupArgs(dirpath, DateLimit, dtpLimitsDateValue.Value)).ContinueWith(task =>
             {
@@ -206,20 +268,26 @@ namespace RectifyUI
         {
             lblAnalysisResults.Text = "Analysis in progress";
 
+            string line1 = $"Analysing file {e.CurrentStep:#,##0} of {e.TotalSteps:#,##0}";
+            string line2 = $"{e.DirectoryName} > {Path.GetFileName(e.FilePath)}";
+
+            string line3 = e.RemainingTime.TotalMinutes < 1 
+                             ? $"About {e.RemainingTime.TotalSeconds:#,##0} seconds remaining" 
+                             : $"About {e.RemainingTime.TotalMinutes:#,##0} minutes remaining";
+
             UpdateProgress(e.TotalSteps, e.CurrentStep);
+            ShowProgressDialogMessage(line1: line1, 
+                                      line2: line2, 
+                                      line3: line3, 
+                                      currentStep: e.CurrentStep, 
+                                      totalSteps: e.TotalSteps);
 
             toolStripProgresslbl.Visible = true;
-            toolStripProgresslbl.Text = "Analysing";
+            toolStripProgresslbl.Text = line3;
             toolStripCancelBtn.Visible = true;
 
             // Update the progress message
-            if( e.RemainingTime.TotalMinutes < 1 )
-                toolStripStatuslbl.Text = $"Remaining: {e.RemainingTime.TotalSeconds:#,##0} seconds";
-            else
-                toolStripStatuslbl.Text = $"Remaining: {e.RemainingTime.TotalMinutes:#,##0} minutes";
-
-            toolStripStatuslbl.Text += $" | File {e.CurrentStep:#,##0} out of {e.TotalSteps:#,##0}";
-            toolStripStatuslbl.Text += $" | {e.DirectoryName} > {Path.GetFileName(e.FilePath)}";
+            toolStripStatuslbl.Text =  line1 + " | "+ line2;
         }
 
         #region Grid Updating and Interaction Handling
@@ -401,7 +469,7 @@ namespace RectifyUI
                 return;
 
             // Disable all the interactable UI
-            splitMain.Enabled = false;
+            ShowProgressAndDisableUI("Correcting library files", "Correcting file locations");
 
             _corrector.RunAsync(selectedFiles).ContinueWith(task =>
             {
@@ -434,14 +502,22 @@ namespace RectifyUI
 
         private void _corrector_BackgroundProgress(object sender, CorrectorProgressArgs e)
         {
+            string line1 = $"Moving {e.TotalSteps} items";
+            string line2 = $"from {Path.GetFileName(e.FilePathFrom)} to {Path.GetDirectoryName(e.FilePathTo)}";
+
             UpdateProgress(e.TotalSteps, e.CurrentStep);
+            ShowProgressDialogMessage(line1: line1,
+                                      line2: line2,
+                                      line3: line1,
+                                      currentStep: e.CurrentStep,
+                                      totalSteps: e.TotalSteps);
 
             toolStripProgresslbl.Visible = true;
-            toolStripProgresslbl.Text = "Moving Files";
+            toolStripProgresslbl.Text = line1;
             toolStripCancelBtn.Visible = true;
 
             // Update the progress message
-            toolStripStatuslbl.Text = $"Moving {Path.GetFileName(e.FilePathFrom)} to {Path.GetDirectoryName(e.FilePathTo)}";
+            toolStripStatuslbl.Text = line1 + " " + line2;
         }
 
         private void dataGridMain_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)

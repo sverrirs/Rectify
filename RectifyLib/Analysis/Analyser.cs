@@ -79,12 +79,19 @@ namespace RectifyLib.Analysis
                         else
                         {
                             dirInfo.AddFile(new FileAnalysis(dirInfo, filePath));
+                            // Also store a hash of the directory date and the suffix if there is one
                         }
                     }
 
                     // Save the full directory info for the results
                     results.AddDirectory(dirInfo);
                 }
+
+                // If we're dealing with a full analysis then after everything has been analysed
+                // a final pass through all the data is needed to see if any suffixes need propogating 
+                // to new destination folders.
+                // if (isFullAnalysis)
+                // TODO: I'm not convinced of this yet!
 
                 return results;
             }
@@ -140,7 +147,7 @@ namespace RectifyLib.Analysis
             if (TryGetFileCreationDate(filePath, out dateTaken))
             {
                 // Is the date within our limits
-                if (startupArgs.Limit != DateLimits.NoLimit &&
+                if (startupArgs.Limit == DateLimits.NoLimit ||
                     !startupArgs.IsDateExcludedByLimit(dateTaken))
                 {
                     // Determine the correct date category for this date
