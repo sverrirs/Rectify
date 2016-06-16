@@ -68,7 +68,7 @@ namespace RectifyLib.Analysis
                 case DateLimits.Year:
                     return dateTaken < _lowerLimit || dateTaken > _upperLimit;
                 default:
-                    throw new ArgumentOutOfRangeException("Unsupported date range for limit filter");
+                    throw new ArgumentOutOfRangeException(nameof(dateTaken), "Unsupported date range for limit filter");
             }
         }
     }
