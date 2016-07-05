@@ -9,6 +9,10 @@ Sometimes applications such as Google Picasa can incorrectly identify the shooti
 
 As an example a photo from January 21, 2016 might end up in your November 3, 2001 folder.
 
+<p align="center">
+  <a href="https://www.paypal.me/sverrirs/1.5" target="_blank"><img border="0" src="https://www.paypalobjects.com/en_US/i/btn/x-click-but21.gif" alt="Like my work? You can donate to this project using PayPal" title="Like my work? You can donate to this project using PayPal"></a>
+</p>
+
 # Install
 Download the application from the <a href="https://github.com/sverrirs/Rectify/releases">releases section</a>. 
 
